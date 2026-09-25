@@ -5,9 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F4F6F9"
-    android:clickable="true"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
     android:fillViewport="true">
 
     <LinearLayout
@@ -16,7 +13,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- КЛИКАБЕЛЬНЫЙ ЗАГОЛОВОК VRN (МАСКИРОВКА КНОПКИ) -->
+        <!-- КЛИКАБЕЛЬНЫЙ ЗАГОЛОВОК VRN (ОТКРЫВАЕТ / СКРЫВАЕТ РЕДАКТИРОВАНИЕ) -->
         <TextView
             android:id="@+id/tvVrnLogo"
             android:layout_width="wrap_content"
@@ -33,7 +30,7 @@
             android:textSize="32sp"
             android:textStyle="bold" />
 
-        <!-- 1. ПЛАШКА БИЛЕТА И QR-КОДА НАВЕРХУ -->
+        <!-- 1. ЕДИНАЯ КАРТОЧКА БИЛЕТА -->
         <androidx.cardview.widget.CardView
             android:id="@+id/cardTicket"
             android:layout_width="match_parent"
@@ -94,7 +91,7 @@
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
-                    <!-- QR-код -->
+                    <!-- КРУПНЫЙ QR-КОД -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -104,8 +101,8 @@
 
                         <ImageView
                             android:id="@+id/ivQrCode"
-                            android:layout_width="240dp"
-                            android:layout_height="240dp"
+                            android:layout_width="280dp"
+                            android:layout_height="280dp"
                             android:contentDescription="QR Code" />
                     </LinearLayout>
 
@@ -126,7 +123,7 @@
                         android:textColor="#222222"
                         android:textSize="15sp" />
 
-                    <!-- ID TICKET -->
+                    <!-- ID Ticket -->
                     <TextView
                         android:id="@+id/tvTicketNumberInfo"
                         android:layout_width="match_parent"
@@ -138,8 +135,9 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- 2. ФОРМА ВВОДА И РЕДАКТИРОВАНИЯ -->
+        <!-- 2. ФОРМА ВВОДА (СКРЫВАЕТСЯ ПРИ ГЕНЕРАЦИИ) -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardInputForm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
@@ -215,7 +213,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
                     android:backgroundTint="#004B93"
-                    android:text="Ticket aktualisieren / speichern"
+                    android:text="Ticket erstellen"
                     android:textColor="#FFFFFF"
                     android:textSize="16sp"
                     android:textStyle="bold" />
