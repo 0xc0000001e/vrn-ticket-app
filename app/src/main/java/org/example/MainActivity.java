@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,6 +27,8 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
+
     private ImageView qrCodeImage;
     private TextView tvPassengerName;
     private TextView tvPassengerDob;
@@ -40,49 +43,63 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Инициализация View по корректным ID
-        qrCodeImage = findViewById(R.id.qrCodeImage);
-        tvPassengerName = findViewById(R.id.tvPassengerName);
-        tvPassengerDob = findViewById(R.id.tvPassengerDob);
-        tvValidityInfo = findViewById(R.id.tvValidityInfo);
-        tvTicketNumberInfo = findViewById(R.id.tvTicketNumberInfo);
-        shimmerBar = findViewById(R.id.shimmerBar);
-        securityBlock = findViewById(R.id.securityBlock);
-        bottomNavigation = findViewById(R.id.bottomNavigation);
+        try {
+            // Инициализация View компонентов
+            qrCodeImage = findViewById(R.id.qrCodeImage);
+            tvPassengerName = findViewById(R.id.tvPassengerName);
+            tvPassengerDob = findViewById(R.id.tvPassengerDob);
+            tvValidityInfo = findViewById(R.id.tvValidityInfo);
+            tvTicketNumberInfo = findViewById(R.id.tvTicketNumberInfo);
+            shimmerBar = findViewById(R.id.shimmerBar);
+            securityBlock = findViewById(R.id.securityBlock);
+            bottomNavigation = findViewById(R.id.bottomNavigation);
 
-        // Навигация
-        bottomNavigation.setSelectedItemId(R.id.nav_fahrkarten);
-        bottomNavigation.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-            return itemId == R.id.nav_fahrkarten || itemId == R.id.nav_fahrplan || itemId == R.id.nav_profil;
-        });
+            // Обработка нижнего меню
+            if (bottomNavigation != null) {
+                bottomNavigation.setSelectedItemId(R.id.nav_fahrkarten);
+                bottomNavigation.setOnItemSelectedListener(item -> {
+                    int itemId = item.getItemId();
+                    return itemId == R.id.nav_fahrkarten || itemId == R.id.nav_fahrplan || itemId == R.id.nav_profil;
+                });
+            }
 
-        // Создаем данные билета
-        LocalDate birthDate = LocalDate.of(1990, 1, 1);
-        Passenger passenger = new Passenger("Max", "Mustermann", birthDate, "max.mustermann@example.com");
+            // Инициализация объектов моделей с безопасной обработкой
+            setupTicketData();
 
-        TicketStatus status = TicketStatus.values()[0];
-        String ticketId = "VRN-DT-89230492";
-        YearMonth validityMonth = YearMonth.of(2026, 10);
-        BigDecimal price = new BigDecimal("49.00");
-        String cardNumber = "DE89370001";
-        EnumSet<TransitType> transitTypes = EnumSet.allOf(TransitType.class);
+            // Безопасный запуск анимации
+            startSecurityShimmerAnimation();
 
-        DeutschlandTicket ticket = new DeutschlandTicket(
-                ticketId,
-                passenger,
-                validityMonth,
-                price,
-                cardNumber,
-                status,
-                transitTypes
-        );
+        } catch (Exception e) {
+            Log.e(TAG, "Error in onCreate", e);
+        }
+    }
 
-        // Отображаем билет
-        displayTicketData(ticketId, "Max Mustermann", birthDate, validityMonth);
+    private void setupTicketData() {
+        try {
+            LocalDate birthDate = LocalDate.of(1990, 1, 1);
+            Passenger passenger = new Passenger("Max", "Mustermann", birthDate, "max.mustermann@example.com");
 
-        // Анимация защитного блока
-        startSecurityShimmerAnimation();
+            TicketStatus status = TicketStatus.values().length > 0 ? TicketStatus.values()[0] : null;
+            String ticketId = "VRN-DT-89230492";
+            YearMonth validityMonth = YearMonth.of(2026, 10);
+            BigDecimal price = new BigDecimal("49.00");
+            String cardNumber = "DE89370001";
+            EnumSet<TransitType> transitTypes = EnumSet.allOf(TransitType.class);
+
+            DeutschlandTicket ticket = new DeutschlandTicket(
+                    ticketId,
+                    passenger,
+                    validityMonth,
+                    price,
+                    cardNumber,
+                    status,
+                    transitTypes
+            );
+
+            displayTicketData(ticketId, "Max Mustermann", birthDate, validityMonth);
+        } catch (Exception e) {
+            Log.e(TAG, "Error setting up ticket data", e);
+        }
     }
 
     private void displayTicketData(String ticketId, String passengerName, LocalDate birthDate, YearMonth validityMonth) {
@@ -92,12 +109,11 @@ public class MainActivity extends AppCompatActivity {
         LocalDate validUntilDate = validityMonth.atEndOfMonth();
         String formattedValidUntil = validUntilDate.format(dateFormatter);
 
-        tvPassengerName.setText(passengerName);
-        tvPassengerDob.setText(formattedDob);
-        tvValidityInfo.setText(formattedValidUntil);
-        tvTicketNumberInfo.setText(ticketId);
+        if (tvPassengerName != null) tvPassengerName.setText(passengerName);
+        if (tvPassengerDob != null) tvPassengerDob.setText(formattedDob);
+        if (tvValidityInfo != null) tvValidityInfo.setText(formattedValidUntil);
+        if (tvTicketNumberInfo != null) tvTicketNumberInfo.setText(ticketId);
 
-        // Генерация Aztec-кода
         String barcodeData = String.format("VRN|%s|%s|%s",
                 ticketId,
                 passengerName,
@@ -107,6 +123,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void generateDenseAztecCode(String data) {
+        if (qrCodeImage == null) return;
+
         try {
             Map<EncodeHintType, Object> hints = new EnumMap<>(EncodeHintType.class);
             hints.put(EncodeHintType.MARGIN, 0);
@@ -126,25 +144,34 @@ public class MainActivity extends AppCompatActivity {
 
             qrCodeImage.setImageBitmap(bitmap);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error generating Aztec code", e);
         }
     }
 
     private void startSecurityShimmerAnimation() {
-        securityBlock.post(() -> {
-            int parentWidth = securityBlock.getWidth();
-            int shimmerWidth = shimmerBar.getWidth();
+        if (securityBlock == null || shimmerBar == null) return;
 
-            ObjectAnimator animator = ObjectAnimator.ofFloat(
-                    shimmerBar,
-                    "translationX",
-                    -shimmerWidth,
-                    parentWidth
-            );
-            animator.setDuration(2000);
-            animator.setRepeatCount(ValueAnimator.INFINITE);
-            animator.setRepeatMode(ValueAnimator.REVERSE);
-            animator.start();
+        securityBlock.post(() -> {
+            try {
+                int parentWidth = securityBlock.getWidth();
+                int shimmerWidth = shimmerBar.getWidth();
+
+                if (parentWidth <= 0) parentWidth = 1000;
+                if (shimmerWidth <= 0) shimmerWidth = 200;
+
+                ObjectAnimator animator = ObjectAnimator.ofFloat(
+                        shimmerBar,
+                        "translationX",
+                        -shimmerWidth,
+                        parentWidth
+                );
+                animator.setDuration(2000);
+                animator.setRepeatCount(ValueAnimator.INFINITE);
+                animator.setRepeatMode(ValueAnimator.REVERSE);
+                animator.start();
+            } catch (Exception e) {
+                Log.e(TAG, "Error starting animation", e);
+            }
         });
     }
 }
