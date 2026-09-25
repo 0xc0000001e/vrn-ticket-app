@@ -372,7 +372,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return bitmap;
         } catch (Exception e) {
-            e.printStackTrace塑造();
+            e.printStackTrace();
             return null;
         }
     }
