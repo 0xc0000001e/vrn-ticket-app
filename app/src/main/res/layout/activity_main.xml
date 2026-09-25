@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#F2F4F7">
 
-    <!-- 1. Отдельная шапка -->
+    <!-- 1. Отдельная плашка-шапка -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/headerCard"
         android:layout_width="0dp"
@@ -80,7 +80,7 @@
                 app:layout_constraintTop_toBottomOf="@id/tvStatus"
                 tools:srcCompat="@android:drawable/ic_menu_gallery" />
 
-            <!-- Данные в 2 колонки -->
+            <!-- Таблица данных пассажира -->
             <TableLayout
                 android:id="@+id/dataTable"
                 android:layout_width="0dp"
@@ -91,7 +91,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/qrCodeImage">
 
-                <!-- Ряд 1: Inhaber -->
                 <TableRow android:paddingVertical="4dp">
                     <TextView
                         android:text="Inhaber"
@@ -107,7 +106,6 @@
                         tools:text="Max Mustermann" />
                 </TableRow>
 
-                <!-- Ряд 2: Geburtsdatum -->
                 <TableRow android:paddingVertical="4dp">
                     <TextView
                         android:text="Geburtsdatum"
@@ -121,7 +119,6 @@
                         tools:text="01.01.1990" />
                 </TableRow>
 
-                <!-- Ряд 3: Gültig bis -->
                 <TableRow android:paddingVertical="4dp">
                     <TextView
                         android:text="Gültig bis"
@@ -136,7 +133,6 @@
                         tools:text="31.10.2026" />
                 </TableRow>
 
-                <!-- Ряд 4: Ticket ID -->
                 <TableRow android:paddingVertical="4dp">
                     <TextView
                         android:text="Ticket ID"
@@ -151,7 +147,7 @@
                 </TableRow>
             </TableLayout>
 
-            <!-- Блок защиты от скриншотов с бегающим бликом -->
+            <!-- Блок защиты от скриншотов -->
             <FrameLayout
                 android:id="@+id/securityBlock"
                 android:layout_width="0dp"
