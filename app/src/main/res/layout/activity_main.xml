@@ -13,7 +13,7 @@
         android:orientation="vertical"
         android:padding="6dp">
 
-        <!-- КАРТОЧКА БИЛЕТА -->
+        <!-- КАРТОЧКА БИЛЕТА (РАСТЯНУТА К НИЗУ ЭКРАНА) -->
         <androidx.cardview.widget.CardView
             android:id="@+id/cardTicket"
             android:layout_width="match_parent"
@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!-- ШАПКА БИЛЕТА С НАДПИСЬЮ "VRN Ticket" (КЛИКАБЕЛЬНАЯ СЕКРЕТНАЯ КНОПКА) -->
+                <!-- ШАПКА БИЛЕТА (КЛИКАБЕЛЬНАЯ СЕКРЕТНАЯ КНОПКА) -->
                 <LinearLayout
                     android:id="@+id/layoutTicketHeader"
                     android:layout_width="match_parent"
@@ -67,19 +67,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="12dp">
+                    android:padding="16dp">
 
-                    <!-- СТАТУС GÜLTIG В ПРАВОЙ ЧАСТИ -->
+                    <!-- СТАТУС GÜLTIG В ЛЕВОЙ ЧАСТИ -->
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:layout_marginBottom="8dp">
+                        android:layout_marginBottom="12dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentStart="true"
                             android:background="#E8F5E9"
                             android:paddingHorizontal="14dp"
                             android:paddingVertical="6dp"
@@ -89,11 +89,11 @@
                             android:textStyle="bold" />
                     </RelativeLayout>
 
-                    <!-- ЕЩЕ БОЛЕЕ КРУПНЫЙ QR-КОД (380dp) -->
+                    <!-- БОЛЬШОЙ QR-КОД -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
+                        android:layout_marginBottom="20dp"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -104,13 +104,13 @@
                             android:contentDescription="QR Code" />
                     </LinearLayout>
 
-                    <!-- ИНФОРМАЦИЯ О ПАССАЖИРЕ -->
+                    <!-- ИНФОРМАЦИЯ О ПАССАЖИРЕ (РАСТЯНУТАЯ) -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="#F8F9FA"
                         android:orientation="vertical"
-                        android:padding="16dp">
+                        android:padding="18dp">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -124,7 +124,7 @@
                             android:id="@+id/tvPassengerName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="12dp"
+                            android:layout_marginBottom="14dp"
                             android:textColor="#111111"
                             android:textSize="19sp"
                             android:textStyle="bold" />
@@ -141,14 +141,14 @@
                             android:id="@+id/tvPassengerDob"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="12dp"
+                            android:layout_marginBottom="14dp"
                             android:textColor="#222222"
                             android:textSize="16sp" />
 
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:layout_marginVertical="8dp"
+                            android:layout_marginVertical="10dp"
                             android:background="#E0E0E0" />
 
                         <TextView
@@ -163,7 +163,7 @@
                             android:id="@+id/tvValidityInfo"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="12dp"
+                            android:layout_marginBottom="14dp"
                             android:textColor="#222222"
                             android:textSize="16sp" />
 
@@ -173,7 +173,7 @@
                             android:layout_height="wrap_content"
                             android:background="#EEEEEE"
                             android:fontFamily="monospace"
-                            android:padding="10dp"
+                            android:padding="12dp"
                             android:textColor="#444444"
                             android:textSize="13sp" />
 
@@ -183,7 +183,7 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- ФОРМА ВВОДА (СКРЫТА ПО УМОЛЧАНИЮ ПОСЛЕ СОЗДАНИЯ ТИКЕТА) -->
+        <!-- ФОРМА ВВОДА -->
         <androidx.cardview.widget.CardView
             android:id="@+id/cardInputForm"
             android:layout_width="match_parent"
