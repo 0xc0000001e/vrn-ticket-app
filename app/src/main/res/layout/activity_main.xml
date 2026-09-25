@@ -1,36 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/mainScrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F4F6F9"
-    android:fillViewport="true">
+    android:background="#FFFFFF">
 
-    <LinearLayout
+    <!-- ОСНОВНОЙ КОНТЕНТ (СНОЛЛ) -->
+    <ScrollView
+        android:id="@+id/mainScrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="6dp">
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottomNavigation"
+        android:fillViewport="true">
 
-        <!-- КАРТОЧКА БИЛЕТА (РАСТЯНУТА К НИЗУ ЭКРАНА) -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardTicket"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="16dp"
-            android:visibility="gone"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="8dp"
-            app:cardUseCompatPadding="true">
+            android:orientation="vertical">
 
+            <!-- БИЛЕТ БЕЗ ЭФФЕКТА КАРТОЧКИ (FLAT DESIGN) -->
             <LinearLayout
+                android:id="@+id/layoutTicketContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
-                <!-- ШАПКА БИЛЕТА (КЛИКАБЕЛЬНАЯ СЕКРЕТНАЯ КНОПКА) -->
+                <!-- ШАПКА БИЛЕТА (КЛИКАБЕЛЬНАЯ ДЛЯ РЕДАКТИРОВАНИЯ) -->
                 <LinearLayout
                     android:id="@+id/layoutTicketHeader"
                     android:layout_width="match_parent"
@@ -62,49 +58,42 @@
                         android:textSize="13sp" />
                 </LinearLayout>
 
-                <!-- Содержимое билета -->
+                <!-- СОДЕРЖИМОЕ БИЛЕТА -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
                     <!-- СТАТУС GÜLTIG В ЛЕВОЙ ЧАСТИ -->
-                    <RelativeLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="12dp">
+                        android:layout_marginBottom="16dp"
+                        android:background="#E8F5E9"
+                        android:paddingHorizontal="14dp"
+                        android:paddingVertical="6dp"
+                        android:text="● GÜLTIG"
+                        android:textColor="#2E7D32"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentStart="true"
-                            android:background="#E8F5E9"
-                            android:paddingHorizontal="14dp"
-                            android:paddingVertical="6dp"
-                            android:text="● GÜLTIG"
-                            android:textColor="#2E7D32"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
-                    </RelativeLayout>
-
-                    <!-- БОЛЬШОЙ QR-КОД -->
+                    <!-- БОЛЬШОЙ AZTEC-КОД -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="20dp"
+                        android:layout_marginBottom="24dp"
                         android:gravity="center"
                         android:orientation="vertical">
 
                         <ImageView
-                            android:id="@+id/ivQrCode"
-                            android:layout_width="380dp"
-                            android:layout_height="380dp"
-                            android:contentDescription="QR Code" />
+                            android:id="@+id/ivAztecCode"
+                            android:layout_width="340dp"
+                            android:layout_height="340dp"
+                            android:contentDescription="Aztec Code" />
                     </LinearLayout>
 
-                    <!-- ИНФОРМАЦИЯ О ПАССАЖИРЕ (РАСТЯНУТАЯ) -->
+                    <!-- ИНФОРМАЦИЯ О ПАССАЖИРЕ И БИЛЕТЕ -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -125,8 +114,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="14dp"
+                            android:fontFamily="monospace"
                             android:textColor="#111111"
-                            android:textSize="19sp"
+                            android:textSize="18sp"
                             android:textStyle="bold" />
 
                         <TextView
@@ -142,6 +132,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="14dp"
+                            android:fontFamily="monospace"
                             android:textColor="#222222"
                             android:textSize="16sp" />
 
@@ -164,6 +155,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="14dp"
+                            android:fontFamily="monospace"
                             android:textColor="#222222"
                             android:textSize="16sp" />
 
@@ -181,19 +173,10 @@
 
                 </LinearLayout>
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
 
-        <!-- ФОРМА ВВОДА -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardInputForm"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
-            app:cardUseCompatPadding="true">
-
+            <!-- ФОРМА ВВОДА (БЕЗ КАРТОЧКИ) -->
             <LinearLayout
+                android:id="@+id/cardInputForm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -205,7 +188,7 @@
                     android:layout_marginBottom="16dp"
                     android:text="Daten bearbeiten"
                     android:textColor="#004B93"
-                    android:textSize="16sp"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <EditText
@@ -243,7 +226,7 @@
                     android:layout_marginBottom="12dp"
                     android:clickable="true"
                     android:focusable="false"
-                    android:hint="Gültig ab (Auto-Monat)"
+                    android:hint="Gültig ab (z.B. 01.10.2026)"
                     android:textSize="15sp" />
 
                 <EditText
@@ -253,7 +236,7 @@
                     android:layout_marginBottom="16dp"
                     android:clickable="true"
                     android:focusable="false"
-                    android:hint="Gültig bis (Auto-Monat)"
+                    android:hint="Gültig bis (z.B. 31.10.2026)"
                     android:textSize="15sp" />
 
                 <Button
@@ -267,7 +250,20 @@
                     android:textStyle="bold" />
 
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
 
-    </LinearLayout>
-</ScrollView>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- НИЖНЕЕ МЕНЮ НАВИГАЦИИ -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#FFFFFF"
+        app:elevation="8dp"
+        app:itemIconTint="#004B93"
+        app:itemTextColor="#004B93"
+        app:menu="@menu/bottom_nav_menu" />
+
+</RelativeLayout>
