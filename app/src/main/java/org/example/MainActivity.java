@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText etValidFrom;
     private EditText etValidTo;
 
-    private TextView tvVrnLogo;
+    private CardView cardVrnHeader;
     private CardView cardTicket;
     private CardView cardInputForm;
     private TextView tvTicketHeader;
@@ -56,8 +56,8 @@ public class MainActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
-        // Инициализация элементов
-        tvVrnLogo = findViewById(R.id.tvVrnLogo);
+        // Инициализация
+        cardVrnHeader = findViewById(R.id.cardVrnHeader);
         etFirstName = findViewById(R.id.etFirstName);
         etLastName = findViewById(R.id.etLastName);
         etBirthDate = findViewById(R.id.etBirthDate);
@@ -75,20 +75,20 @@ public class MainActivity extends AppCompatActivity {
 
         Button btnGenerate = findViewById(R.id.btnGenerate);
 
-        // Настройка дат
+        // Настройка датчиков
         setupDatePicker(etBirthDate);
         setupDatePicker(etValidFrom);
         setupDatePicker(etValidTo);
 
-        // 2D-вращение QR-кода при нажатии
+        // 2D-вращение QR
         ivQrCode.setOnClickListener(this::spinQrCode2D);
 
-        // Переключение видимости по нажатию на VRN
-        tvVrnLogo.setOnClickListener(v -> toggleInputForm());
+        // Переключение видимости формы
+        cardVrnHeader.setOnClickListener(v -> toggleInputForm());
 
         btnGenerate.setOnClickListener(v -> generateAndSaveTicket());
 
-        // Загрузка данных при запуске
+        // Загрузка (с автоматическим расчет текущего месяца)
         loadSavedTicketData();
     }
 
@@ -142,14 +142,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private String generateOrGetTicketId() {
-        String savedId = sharedPreferences.getString("ticketId", "");
-        if (savedId.isEmpty()) {
-            int randomNum = 10000000 + new Random().nextInt(90000000);
-            savedId = "VRN-DT-" + randomNum;
-            sharedPreferences.edit().putString("ticketId", savedId).apply();
-        }
-        return savedId;
+    private String generateNewTicketId() {
+        int randomNum = 10000000 + new Random().nextInt(90000000);
+        String newId = "VRN-DT-" + randomNum;
+        sharedPreferences.edit().putString("ticketId", newId).apply();
+        return newId;
+    }
+
+    // Вычисление диапазона текущего месяца (01.MM.YYYY - 01.MM+1.YYYY)
+    private String[] getCurrentMonthDates() {
+        Calendar cal = Calendar.getInstance();
+        int curYear = cal.get(Calendar.YEAR);
+        int curMonth = cal.get(Calendar.MONTH) + 1; // 1..12
+
+        String validFrom = String.format(Locale.GERMANY, "01.%02d.%04d", curMonth, curYear);
+
+        cal.add(Calendar.MONTH, 1);
+        int nextYear = cal.get(Calendar.YEAR);
+        int nextMonth = cal.get(Calendar.MONTH) + 1;
+
+        String validTo = String.format(Locale.GERMANY, "01.%02d.%04d", nextMonth, nextYear);
+
+        return new String[]{validFrom, validTo, String.format(Locale.GERMANY, "%02d.%04d", curMonth, curYear)};
     }
 
     private void generateAndSaveTicket() {
@@ -165,9 +179,19 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        String ticketId = generateOrGetTicketId();
+        if (validFrom.isEmpty() || validTo.isEmpty()) {
+            String[] autoDates = getCurrentMonthDates();
+            validFrom = autoDates[0];
+            validTo = autoDates[1];
+            etValidFrom.setText(validFrom);
+            etValidTo.setText(validTo);
+        }
 
-        // Сохранение
+        String ticketId = sharedPreferences.getString("ticketId", "");
+        if (ticketId.isEmpty()) {
+            ticketId = generateNewTicketId();
+        }
+
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("firstName", firstName);
         editor.putString("lastName", lastName);
@@ -177,7 +201,6 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
 
         displayTicket(firstName, lastName, birthDate, validFrom, validTo, ticketId);
-
         cardInputForm.setVisibility(View.GONE);
     }
 
@@ -185,9 +208,27 @@ public class MainActivity extends AppCompatActivity {
         String firstName = sharedPreferences.getString("firstName", "");
         String lastName = sharedPreferences.getString("lastName", "");
         String birthDate = sharedPreferences.getString("birthDate", "");
-        String validFrom = sharedPreferences.getString("validFrom", "");
-        String validTo = sharedPreferences.getString("validTo", "");
+
+        String[] currentMonthInfo = getCurrentMonthDates();
+        String autoValidFrom = currentMonthInfo[0];
+        String autoValidTo = currentMonthInfo[1];
+        String currentMonthKey = currentMonthInfo[2]; // Например "09.2026"
+
+        String lastProcessedMonth = sharedPreferences.getString("lastMonthKey", "");
         String ticketId = sharedPreferences.getString("ticketId", "");
+
+        // ПРОВЕРКА НА СМЕНУ МЕСЯЦА: Если наступил новый месяц, авто-генерируем новый ID и даты!
+        if (!currentMonthKey.equals(lastProcessedMonth)) {
+            ticketId = generateNewTicketId();
+            sharedPreferences.edit()
+                    .putString("lastMonthKey", currentMonthKey)
+                    .putString("validFrom", autoValidFrom)
+                    .putString("validTo", autoValidTo)
+                    .apply();
+        }
+
+        String validFrom = sharedPreferences.getString("validFrom", autoValidFrom);
+        String validTo = sharedPreferences.getString("validTo", autoValidTo);
 
         etFirstName.setText(firstName);
         etLastName.setText(lastName);
@@ -196,9 +237,6 @@ public class MainActivity extends AppCompatActivity {
         etValidTo.setText(validTo);
 
         if (!firstName.isEmpty() && !lastName.isEmpty() && !birthDate.isEmpty()) {
-            if (ticketId.isEmpty()) {
-                ticketId = generateOrGetTicketId();
-            }
             displayTicket(firstName, lastName, birthDate, validFrom, validTo, ticketId);
             cardInputForm.setVisibility(View.GONE);
         }
@@ -216,7 +254,7 @@ public class MainActivity extends AppCompatActivity {
                 firstName, lastName, birthDate, validFrom, validTo, ticketId
         );
 
-        Bitmap qrBitmap = generateQrCodeBitmap(qrContent, 1000, 1000);
+        Bitmap qrBitmap = generateQrCodeBitmap(qrContent, 1200, 1200);
         if (qrBitmap != null) {
             ivQrCode.setImageBitmap(qrBitmap);
             cardTicket.setVisibility(View.VISIBLE);
