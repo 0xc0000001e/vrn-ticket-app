@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="16dp">
 
         <!-- Главный заголовок VRN -->
         <TextView
@@ -18,13 +18,125 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="16dp"
             android:text="VRN"
             android:textColor="#004B93"
             android:textSize="32sp"
             android:textStyle="bold" />
 
-        <!-- Поля ввода данных -->
+        <!-- 1. ПЛАШКА БИЛЕТА И QR-КОДА (ТЕПЕРЬ НАВЕРХУ) -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardTicket"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:visibility="gone"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="6dp"
+            app:cardUseCompatPadding="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Шапка билета -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#004B93"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/tvTicketHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Deutschlandticket"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="VRN • Verkehrsverbund Rhein-Neckar"
+                        android:textColor="#B3D4FF"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- Содержимое билета -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <!-- Статус -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:background="#E8F5E9"
+                        android:paddingHorizontal="14dp"
+                        android:paddingVertical="6dp"
+                        android:text="● GÜLTIG"
+                        android:textColor="#2E7D32"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <!-- QR-код -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/ivQrCode"
+                            android:layout_width="240dp"
+                            android:layout_height="240dp"
+                            android:contentDescription="QR Code" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Auf QR-Code tippen zum Drehen 🔄"
+                            android:textColor="#888888"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <!-- Данные владельца -->
+                    <TextView
+                        android:id="@+id/tvPassengerInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="#222222"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/tvValidityInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="#222222"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/tvTicketNumberInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#555555"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- 2. ФОРМА ВВОДА И РЕДАКТИРОВАНИЯ (ПОД БИЛЕТОМ) -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -38,6 +150,15 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="Daten bearbeiten / Ticket erstellen"
+                    android:textColor="#004B93"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <EditText
                     android:id="@+id/etFirstName"
@@ -101,122 +222,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
                     android:backgroundTint="#004B93"
-                    android:text="Ticket erstellen"
+                    android:text="Ticket aktualisieren / speichern"
                     android:textColor="#FFFFFF"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Карточка готового билета -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardTicket"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="8dp"
-            app:cardUseCompatPadding="true">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <!-- Шапка билета -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#004B93"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:id="@+id/tvTicketHeader"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Deutschlandticket"
-                        android:textColor="#FFFFFF"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="VRN • Verkehrsverbund Rhein-Neckar"
-                        android:textColor="#B3D4FF"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <!-- Содержимое билета -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
-
-                    <!-- Статус -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:background="#E8F5E9"
-                        android:paddingHorizontal="14dp"
-                        android:paddingVertical="6dp"
-                        android:text="● GÜLTIG"
-                        android:textColor="#2E7D32"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-
-                    <!-- QR-КОД НА САМОМ ВЕРХУ -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="20dp"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:id="@+id/ivQrCode"
-                            android:layout_width="230dp"
-                            android:layout_height="230dp"
-                            android:contentDescription="QR Code" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="Auf QR-Code tippen zum Drehen 🔄"
-                            android:textColor="#888888"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-
-                    <!-- Данные пассажира и билета -->
-                    <TextView
-                        android:id="@+id/tvPassengerInfo"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:textColor="#222222"
-                        android:textSize="15sp" />
-
-                    <TextView
-                        android:id="@+id/tvValidityInfo"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:textColor="#222222"
-                        android:textSize="15sp" />
-
-                    <TextView
-                        android:id="@+id/tvTicketNumberInfo"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#555555"
-                        android:textSize="14sp" />
-
-                </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
