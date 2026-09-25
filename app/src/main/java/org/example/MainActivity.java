@@ -25,6 +25,7 @@ import com.google.zxing.common.BitMatrix;
 
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,11 +37,14 @@ public class MainActivity extends AppCompatActivity {
     private EditText etValidFrom;
     private EditText etValidTo;
 
+    private TextView tvVrnLogo;
     private CardView cardTicket;
     private TextView tvTicketHeader;
     private TextView tvPassengerInfo;
     private TextView tvValidityInfo;
+    private TextView tvTicketNumberInfo;
     private ImageView ivQrCode;
+    private Button btnGenerate;
 
     private SharedPreferences sharedPreferences;
 
@@ -51,7 +55,8 @@ public class MainActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
-        // Инициализация полей
+        // Инициализация элементов
+        tvVrnLogo = findViewById(R.id.tvVrnLogo);
         etFirstName = findViewById(R.id.etFirstName);
         etLastName = findViewById(R.id.etLastName);
         etBirthDate = findViewById(R.id.etBirthDate);
@@ -62,11 +67,11 @@ public class MainActivity extends AppCompatActivity {
         tvTicketHeader = findViewById(R.id.tvTicketHeader);
         tvPassengerInfo = findViewById(R.id.tvPassengerInfo);
         tvValidityInfo = findViewById(R.id.tvValidityInfo);
+        tvTicketNumberInfo = findViewById(R.id.tvTicketNumberInfo);
         ivQrCode = findViewById(R.id.ivQrCode);
+        btnGenerate = findViewById(R.id.btnGenerate);
 
-        Button btnGenerate = findViewById(R.id.btnGenerate);
-
-        // Настройка календаря
+        // Выбор дат
         setupDatePicker(etBirthDate);
         setupDatePicker(etValidFrom);
         setupDatePicker(etValidTo);
@@ -74,7 +79,14 @@ public class MainActivity extends AppCompatActivity {
         // 2D-вращение QR-кода при нажатии
         ivQrCode.setOnClickListener(this::spinQrCode2D);
 
-        btnGenerate.setOnClickListener(v -> generateAndSaveTicket());
+        // Нажатие на логотип VRN заменяет кнопку генерации
+        tvVrnLogo.setOnClickListener(v -> generateAndSaveTicket());
+
+        // Нижняя кнопка генерации
+        btnGenerate.setOnClickListener(v -> {
+            generateAndSaveTicket();
+            btnGenerate.setVisibility(View.GONE); // Скрывается после нажатия
+        });
 
         // Загрузка сохранённых данных
         loadSavedTicketData();
@@ -83,7 +95,10 @@ public class MainActivity extends AppCompatActivity {
     private void setupDatePicker(EditText editText) {
         editText.setFocusable(false);
         editText.setClickable(true);
-        editText.setOnClickListener(v -> showDatePickerDialog(editText));
+        editText.setOnClickListener(v -> {
+            btnGenerate.setVisibility(View.VISIBLE); // Показываем кнопку при изменении полей
+            showDatePickerDialog(editText);
+        });
     }
 
     private void showDatePickerDialog(EditText targetEditText) {
@@ -103,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    // 2D-вращение вокруг своей оси
     private void spinQrCode2D(View view) {
         ObjectAnimator animator = ObjectAnimator.ofFloat(view, "rotation", 0f, 360f);
         animator.setDuration(800);
@@ -122,8 +136,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private String generateOrGetTicketId() {
+        String savedId = sharedPreferences.getString("ticketId", "");
+        if (savedId.isEmpty()) {
+            int randomNum = 10000000 + new Random().nextInt(90000000);
+            savedId = "VRN-DT-" + randomNum;
+            sharedPreferences.edit().putString("ticketId", savedId).apply();
+        }
+        return savedId;
+    }
+
     private void generateAndSaveTicket() {
-        // Убираем курсор и закрываем клавиатуру
         clearFocusAndHideKeyboard();
 
         String firstName = etFirstName.getText().toString().trim();
@@ -136,7 +159,9 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // Сохранение в память
+        String ticketId = generateOrGetTicketId();
+
+        // Сохранение данных
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("firstName", firstName);
         editor.putString("lastName", lastName);
@@ -145,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("validTo", validTo);
         editor.apply();
 
-        displayTicket(firstName, lastName, birthDate, validFrom, validTo);
+        displayTicket(firstName, lastName, birthDate, validFrom, validTo, ticketId);
     }
 
     private void loadSavedTicketData() {
@@ -154,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
         String birthDate = sharedPreferences.getString("birthDate", "");
         String validFrom = sharedPreferences.getString("validFrom", "");
         String validTo = sharedPreferences.getString("validTo", "");
+        String ticketId = sharedPreferences.getString("ticketId", "");
 
         etFirstName.setText(firstName);
         etLastName.setText(lastName);
@@ -162,18 +188,23 @@ public class MainActivity extends AppCompatActivity {
         etValidTo.setText(validTo);
 
         if (!firstName.isEmpty() && !lastName.isEmpty() && !birthDate.isEmpty()) {
-            displayTicket(firstName, lastName, birthDate, validFrom, validTo);
+            if (ticketId.isEmpty()) {
+                ticketId = generateOrGetTicketId();
+            }
+            displayTicket(firstName, lastName, birthDate, validFrom, validTo, ticketId);
+            btnGenerate.setVisibility(View.GONE); // Скрываем нижнюю кнопку, если билет уже создан
         }
     }
 
-    private void displayTicket(String firstName, String lastName, String birthDate, String validFrom, String validTo) {
+    private void displayTicket(String firstName, String lastName, String birthDate, String validFrom, String validTo, String ticketId) {
         tvTicketHeader.setText("Deutschlandticket");
         tvPassengerInfo.setText(String.format("Inhaber: %s %s\nGeburtsdatum: %s", firstName, lastName, birthDate));
         tvValidityInfo.setText(String.format("Gültig ab: %s\nGültig bis: %s", validFrom, validTo));
+        tvTicketNumberInfo.setText(String.format("ID Ticket: %s", ticketId));
 
         String qrContent = String.format(
-                "VRN|DEUTSCHLANDTICKET|Name:%s %s|DOB:%s|ValidFrom:%s|ValidTo:%s",
-                firstName, lastName, birthDate, validFrom, validTo
+                "VRN|DEUTSCHLANDTICKET|Name:%s %s|DOB:%s|ValidFrom:%s|ValidTo:%s|ID:%s",
+                firstName, lastName, birthDate, validFrom, validTo, ticketId
         );
 
         Bitmap qrBitmap = generateQrCodeBitmap(qrContent, 600, 600);
