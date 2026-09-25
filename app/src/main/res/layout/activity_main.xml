@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainScrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F4F6F9"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:fillViewport="true">
 
     <LinearLayout
@@ -24,7 +28,7 @@
             android:textSize="32sp"
             android:textStyle="bold" />
 
-        <!-- 1. ПЛАШКА БИЛЕТА И QR-КОДА (ТЕПЕРЬ НАВЕРХУ) -->
+        <!-- 1. ПЛАШКА БИЛЕТА И QR-КОДА НАВЕРХУ -->
         <androidx.cardview.widget.CardView
             android:id="@+id/cardTicket"
             android:layout_width="match_parent"
@@ -98,14 +102,6 @@
                             android:layout_width="240dp"
                             android:layout_height="240dp"
                             android:contentDescription="QR Code" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="Auf QR-Code tippen zum Drehen 🔄"
-                            android:textColor="#888888"
-                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <!-- Данные владельца -->
@@ -121,22 +117,14 @@
                         android:id="@+id/tvValidityInfo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
                         android:textColor="#222222"
                         android:textSize="15sp" />
-
-                    <TextView
-                        android:id="@+id/tvTicketNumberInfo"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="#555555"
-                        android:textSize="14sp" />
 
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- 2. ФОРМА ВВОДА И РЕДАКТИРОВАНИЯ (ПОД БИЛЕТОМ) -->
+        <!-- 2. ФОРМА ВВОДА И РЕДАКТИРОВАНИЯ -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -202,19 +190,10 @@
                     android:id="@+id/etValidTo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
+                    android:layout_marginBottom="16dp"
                     android:clickable="true"
                     android:focusable="false"
                     android:hint="Gültig bis (Datum wählen)"
-                    android:textSize="15sp" />
-
-                <EditText
-                    android:id="@+id/etTicketNumber"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:hint="Ticket-Nummer"
-                    android:inputType="text"
                     android:textSize="15sp" />
 
                 <Button
