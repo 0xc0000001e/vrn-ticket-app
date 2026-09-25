@@ -84,12 +84,12 @@ public class MainActivity extends AppCompatActivity {
         // 2D-вращение QR
         ivQrCode.setOnClickListener(this::spinQrCode2D);
 
-        // Нажатие на синий заголовок билета переключает форму редактирования
+        // Переключение формы при клике на шапку
         layoutTicketHeader.setOnClickListener(v -> toggleInputForm());
 
         btnGenerate.setOnClickListener(v -> generateAndSaveTicket());
 
-        // Загрузка сохраненного билета
+        // Загрузка
         loadSavedTicketData();
     }
 
@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
     private String[] getCurrentMonthDates() {
         Calendar cal = Calendar.getInstance();
         int curYear = cal.get(Calendar.YEAR);
-        int curMonth = cal.get(Calendar.MONTH) + 1; // 1..12
+        int curMonth = cal.get(Calendar.MONTH) + 1;
 
         String validFrom = String.format(Locale.GERMANY, "01.%02d.%04d", curMonth, curYear);
 
@@ -217,7 +217,6 @@ public class MainActivity extends AppCompatActivity {
         String lastProcessedMonth = sharedPreferences.getString("lastMonthKey", "");
         String ticketId = sharedPreferences.getString("ticketId", "");
 
-        // Автосмена даты и ID при смене месяца
         if (!currentMonthKey.equals(lastProcessedMonth)) {
             ticketId = generateNewTicketId();
             sharedPreferences.edit()
