@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ticket-Daten eingeben"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <EditText
+            android:id="@+id/etFirstName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Vorname"
+            android:inputType="textPersonName"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/etLastName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nachname"
+            android:inputType="textPersonName"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/etBirthDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Geburtsdatum (Datum wählen)"
+            android:focusable="false"
+            android:clickable="true"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/etValidFrom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Gültig ab (Datum wählen)"
+            android:focusable="false"
+            android:clickable="true"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/etValidTo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Gültig bis (Datum wählen)"
+            android:focusable="false"
+            android:clickable="true"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/etTicketNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ticket-Nummer"
+            android:inputType="text"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnGenerate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ticket erstellen"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Блок отображения билета -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#F0F0F0"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvTicketHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Deutschlandticket"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tvPassengerInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#333333"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tvValidityInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#333333"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tvTicketNumberInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#333333"
+                android:layout_marginBottom="12dp" />
+
+            <ImageView
+                android:id="@+id/ivQrCode"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
