@@ -4,6 +4,8 @@ import org.example.R;
 
 import android.animation.ObjectAnimator;
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -25,6 +27,8 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String PREFS_NAME = "VrnTicketPrefs";
+
     private EditText etFirstName;
     private EditText etLastName;
     private EditText etBirthDate;
@@ -39,10 +43,14 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvTicketNumberInfo;
     private ImageView ivQrCode;
 
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
         // Инициализация полей
         etFirstName = findViewById(R.id.etFirstName);
@@ -61,15 +69,18 @@ public class MainActivity extends AppCompatActivity {
 
         Button btnGenerate = findViewById(R.id.btnGenerate);
 
-        // Календарь для выбора дат
+        // Настройка календаря
         setupDatePicker(etBirthDate);
         setupDatePicker(etValidFrom);
         setupDatePicker(etValidTo);
 
-        // Вращение QR-кода при нажатии
-        ivQrCode.setOnClickListener(v -> spinQrCode(v));
+        // Анимация вращения QR-кода при нажатии
+        ivQrCode.setOnClickListener(this::spinQrCode);
 
-        btnGenerate.setOnClickListener(v -> generateTicket());
+        btnGenerate.setOnClickListener(v -> generateAndSaveTicket());
+
+        // Загрузка сохранённых данных при старте
+        loadSavedTicketData();
     }
 
     private void setupDatePicker(EditText editText) {
@@ -102,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
         animator.start();
     }
 
-    private void generateTicket() {
+    private void generateAndSaveTicket() {
         String firstName = etFirstName.getText().toString().trim();
         String lastName = etLastName.getText().toString().trim();
         String birthDate = etBirthDate.getText().toString().trim();
@@ -114,6 +125,41 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        // Сохраняем в память устройства
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("firstName", firstName);
+        editor.putString("lastName", lastName);
+        editor.putString("birthDate", birthDate);
+        editor.putString("validFrom", validFrom);
+        editor.putString("validTo", validTo);
+        editor.putString("ticketNumber", ticketNumber);
+        editor.apply();
+
+        // Отображаем билет
+        displayTicket(firstName, lastName, birthDate, validFrom, validTo, ticketNumber);
+    }
+
+    private void loadSavedTicketData() {
+        String firstName = sharedPreferences.getString("firstName", "");
+        String lastName = sharedPreferences.getString("lastName", "");
+        String birthDate = sharedPreferences.getString("birthDate", "");
+        String validFrom = sharedPreferences.getString("validFrom", "");
+        String validTo = sharedPreferences.getString("validTo", "");
+        String ticketNumber = sharedPreferences.getString("ticketNumber", "");
+
+        etFirstName.setText(firstName);
+        etLastName.setText(lastName);
+        etBirthDate.setText(birthDate);
+        etValidFrom.setText(validFrom);
+        etValidTo.setText(validTo);
+        etTicketNumber.setText(ticketNumber);
+
+        if (!firstName.isEmpty() && !lastName.isEmpty() && !birthDate.isEmpty()) {
+            displayTicket(firstName, lastName, birthDate, validFrom, validTo, ticketNumber);
+        }
+    }
+
+    private void displayTicket(String firstName, String lastName, String birthDate, String validFrom, String validTo, String ticketNumber) {
         tvTicketHeader.setText("Deutschlandticket");
         tvPassengerInfo.setText(String.format("Inhaber: %s %s\nGeburtsdatum: %s", firstName, lastName, birthDate));
         tvValidityInfo.setText(String.format("Gültig ab: %s\nGültig bis: %s", validFrom, validTo));
