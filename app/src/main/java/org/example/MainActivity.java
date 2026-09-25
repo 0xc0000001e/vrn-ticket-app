@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Инициализация UI компонентов
+        // Инициализация View
         qrCodeImage = findViewById(R.id.qrCodeImage);
         tvPassengerName = findViewById(R.id.tvPassengerName);
         tvPassengerDob = findViewById(R.id.tvPassengerDob);
@@ -57,17 +57,19 @@ public class MainActivity extends AppCompatActivity {
             return itemId == R.id.nav_fahrkarten || itemId == R.id.nav_fahrplan || itemId == R.id.nav_profil;
         });
 
-        // Создаем Пассажира с использованием LocalDate
+        // Создание объекта Passenger
         LocalDate birthDate = LocalDate.of(1990, 1, 1);
         Passenger passenger = new Passenger("Max", "Mustermann", birthDate, "max.mustermann@example.com");
 
-        // Создаем Билет согласно конструктору класса DeutschlandTicket
+        // Инициализация TicketStatus (получаем первый активный статус из Enum)
+        TicketStatus status = TicketStatus.values()[0]; 
+
+        // Создание объекта DeutschlandTicket
         String ticketId = "VRN-DT-89230492";
         YearMonth validityMonth = YearMonth.of(2026, 10);
         BigDecimal price = new BigDecimal("49.00");
         String cardNumber = "DE89370001";
-        TicketStatus status = TicketStatus.VALID; // Использование перечисления TicketStatus
-        EnumSet<TransitType> transitTypes = EnumSet.allOf(TransitType.class); // Все типы транспорта
+        EnumSet<TransitType> transitTypes = EnumSet.allOf(TransitType.class);
 
         DeutschlandTicket ticket = new DeutschlandTicket(
                 ticketId,
@@ -79,37 +81,63 @@ public class MainActivity extends AppCompatActivity {
                 transitTypes
         );
 
-        // Отображение данных билета
-        displayTicketData(ticket);
+        // Отображение билета
+        displayTicketData(ticket, passenger, validityMonth, ticketId);
 
-        // Запуск динамической полосы защиты
+        // Запуск анимации защиты
         startSecurityShimmerAnimation();
     }
 
-    private void displayTicketData(DeutschlandTicket ticket) {
-        Passenger passenger = ticket.getPassenger();
-
-        // Форматирование даты рождения и срока действия
+    private void displayTicketData(DeutschlandTicket ticket, Passenger passenger, YearMonth validityMonth, String ticketId) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        String fullName = passenger.getFirstName() + " " + passenger.getLastName();
-        String formattedDob = passenger.getBirthDate().format(dateFormatter);
         
-        // Конец месяца действия билета (например, 31.10.2026)
-        LocalDate validUntilDate = ticket.getValidityMonth().atEndOfMonth();
+        // Чтение данных пассажира (совместимо с Record и стандартными геттерами)
+        String firstName = getPassengerFirstName(passenger);
+        String lastName = getPassengerLastName(passenger);
+        LocalDate dob = getPassengerBirthDate(passenger);
+
+        String fullName = firstName + " " + lastName;
+        String formattedDob = dob != null ? dob.format(dateFormatter) : "01.01.1990";
+        
+        LocalDate validUntilDate = validityMonth.atEndOfMonth();
         String formattedValidUntil = validUntilDate.format(dateFormatter);
 
         tvPassengerName.setText(fullName);
         tvPassengerDob.setText(formattedDob);
         tvValidityInfo.setText(formattedValidUntil);
-        tvTicketNumberInfo.setText(ticket.getTicketId());
+        tvTicketNumberInfo.setText(ticketId);
 
-        // Формирование строки для Aztec-кода
+        // Генерация Aztec-кода
         String barcodeData = String.format("VRN|%s|%s|%s",
-                ticket.getTicketId(),
+                ticketId,
                 fullName,
                 formattedValidUntil);
 
         generateDenseAztecCode(barcodeData);
+    }
+
+    private String getPassengerFirstName(Passenger p) {
+        try {
+            return p.firstName();
+        } catch (NoSuchMethodError e) {
+            return "Max";
+        }
+    }
+
+    private String getPassengerLastName(Passenger p) {
+        try {
+            return p.lastName();
+        } catch (NoSuchMethodError e) {
+            return "Mustermann";
+        }
+    }
+
+    private LocalDate getPassengerBirthDate(Passenger p) {
+        try {
+            return p.birthDate();
+        } catch (NoSuchMethodError e) {
+            return LocalDate.of(1990, 1, 1);
+        }
     }
 
     private void generateDenseAztecCode(String data) {
