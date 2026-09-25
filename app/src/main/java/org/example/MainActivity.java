@@ -15,6 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText etValidFrom;
     private EditText etValidTo;
 
-    private CardView cardVrnHeader;
+    private LinearLayout layoutTicketHeader;
     private CardView cardTicket;
     private CardView cardInputForm;
     private TextView tvTicketHeader;
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
         // Инициализация
-        cardVrnHeader = findViewById(R.id.cardVrnHeader);
+        layoutTicketHeader = findViewById(R.id.layoutTicketHeader);
         etFirstName = findViewById(R.id.etFirstName);
         etLastName = findViewById(R.id.etLastName);
         etBirthDate = findViewById(R.id.etBirthDate);
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button btnGenerate = findViewById(R.id.btnGenerate);
 
-        // Настройка датчиков
+        // Настройка дат
         setupDatePicker(etBirthDate);
         setupDatePicker(etValidFrom);
         setupDatePicker(etValidTo);
@@ -83,12 +84,12 @@ public class MainActivity extends AppCompatActivity {
         // 2D-вращение QR
         ivQrCode.setOnClickListener(this::spinQrCode2D);
 
-        // Переключение видимости формы
-        cardVrnHeader.setOnClickListener(v -> toggleInputForm());
+        // Нажатие на синий заголовок билета переключает форму редактирования
+        layoutTicketHeader.setOnClickListener(v -> toggleInputForm());
 
         btnGenerate.setOnClickListener(v -> generateAndSaveTicket());
 
-        // Загрузка (с автоматическим расчет текущего месяца)
+        // Загрузка сохраненного билета
         loadSavedTicketData();
     }
 
@@ -149,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
         return newId;
     }
 
-    // Вычисление диапазона текущего месяца (01.MM.YYYY - 01.MM+1.YYYY)
     private String[] getCurrentMonthDates() {
         Calendar cal = Calendar.getInstance();
         int curYear = cal.get(Calendar.YEAR);
@@ -212,12 +212,12 @@ public class MainActivity extends AppCompatActivity {
         String[] currentMonthInfo = getCurrentMonthDates();
         String autoValidFrom = currentMonthInfo[0];
         String autoValidTo = currentMonthInfo[1];
-        String currentMonthKey = currentMonthInfo[2]; // Например "09.2026"
+        String currentMonthKey = currentMonthInfo[2];
 
         String lastProcessedMonth = sharedPreferences.getString("lastMonthKey", "");
         String ticketId = sharedPreferences.getString("ticketId", "");
 
-        // ПРОВЕРКА НА СМЕНУ МЕСЯЦА: Если наступил новый месяц, авто-генерируем новый ID и даты!
+        // Автосмена даты и ID при смене месяца
         if (!currentMonthKey.equals(lastProcessedMonth)) {
             ticketId = generateNewTicketId();
             sharedPreferences.edit()
@@ -239,11 +239,13 @@ public class MainActivity extends AppCompatActivity {
         if (!firstName.isEmpty() && !lastName.isEmpty() && !birthDate.isEmpty()) {
             displayTicket(firstName, lastName, birthDate, validFrom, validTo, ticketId);
             cardInputForm.setVisibility(View.GONE);
+        } else {
+            cardInputForm.setVisibility(View.VISIBLE);
         }
     }
 
     private void displayTicket(String firstName, String lastName, String birthDate, String validFrom, String validTo, String ticketId) {
-        tvTicketHeader.setText("Deutschlandticket");
+        tvTicketHeader.setText("VRN Ticket");
         tvPassengerName.setText(String.format("%s %s", firstName, lastName));
         tvPassengerDob.setText(birthDate);
         tvValidityInfo.setText(String.format("%s - %s", validFrom, validTo));
@@ -254,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
                 firstName, lastName, birthDate, validFrom, validTo, ticketId
         );
 
-        Bitmap qrBitmap = generateQrCodeBitmap(qrContent, 1200, 1200);
+        Bitmap qrBitmap = generateQrCodeBitmap(qrContent, 1400, 1400);
         if (qrBitmap != null) {
             ivQrCode.setImageBitmap(qrBitmap);
             cardTicket.setVisibility(View.VISIBLE);
