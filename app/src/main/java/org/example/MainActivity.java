@@ -1,15 +1,20 @@
 package org.example;
 
+import org.example.R;
+
+import android.animation.ObjectAnimator;
 import android.app.DatePickerDialog;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -27,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText etValidTo;
     private EditText etTicketNumber;
 
+    private CardView cardTicket;
     private TextView tvTicketHeader;
     private TextView tvPassengerInfo;
     private TextView tvValidityInfo;
@@ -38,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Инициализация полей ввода
+        // Инициализация полей
         etFirstName = findViewById(R.id.etFirstName);
         etLastName = findViewById(R.id.etLastName);
         etBirthDate = findViewById(R.id.etBirthDate);
@@ -46,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         etValidTo = findViewById(R.id.etValidTo);
         etTicketNumber = findViewById(R.id.etTicketNumber);
 
-        // Инициализация элементов отображения билета
+        cardTicket = findViewById(R.id.cardTicket);
         tvTicketHeader = findViewById(R.id.tvTicketHeader);
         tvPassengerInfo = findViewById(R.id.tvPassengerInfo);
         tvValidityInfo = findViewById(R.id.tvValidityInfo);
@@ -55,17 +61,15 @@ public class MainActivity extends AppCompatActivity {
 
         Button btnGenerate = findViewById(R.id.btnGenerate);
 
-        // Вызов календаря при клике на поля дат
+        // Календарь для выбора дат
         setupDatePicker(etBirthDate);
         setupDatePicker(etValidFrom);
         setupDatePicker(etValidTo);
 
-        btnGenerate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                generateTicket();
-            }
-        });
+        // Вращение QR-кода при нажатии
+        ivQrCode.setOnClickListener(v -> spinQrCode(v));
+
+        btnGenerate.setOnClickListener(v -> generateTicket());
     }
 
     private void setupDatePicker(EditText editText) {
@@ -83,13 +87,19 @@ public class MainActivity extends AppCompatActivity {
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 MainActivity.this,
                 (view, selectedYear, selectedMonth, selectedDay) -> {
-                    // Форматирование даты в немецкий стандарт DD.MM.YYYY
                     String formattedDate = String.format(Locale.GERMANY, "%02d.%02d.%04d", selectedDay, selectedMonth + 1, selectedYear);
                     targetEditText.setText(formattedDate);
                 },
                 year, month, day
         );
         datePickerDialog.show();
+    }
+
+    private void spinQrCode(View view) {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(view, "rotationY", 0f, 360f);
+        animator.setDuration(800);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.start();
     }
 
     private void generateTicket() {
@@ -104,22 +114,20 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // Блоки и названия на немецком языке
-        tvTicketHeader.setText("Deutschlandticket / VRN Fahrkarte");
-        tvPassengerInfo.setText(String.format("Name: %s %s\nGeburtsdatum: %s", firstName, lastName, birthDate));
+        tvTicketHeader.setText("Deutschlandticket");
+        tvPassengerInfo.setText(String.format("Inhaber: %s %s\nGeburtsdatum: %s", firstName, lastName, birthDate));
         tvValidityInfo.setText(String.format("Gültig ab: %s\nGültig bis: %s", validFrom, validTo));
-        tvTicketNumberInfo.setText(String.format("Ticket-Nr.: %s", ticketNumber.isEmpty() ? "DE99823411" : ticketNumber));
+        tvTicketNumberInfo.setText(String.format("Ticket-ID: %s", ticketNumber.isEmpty() ? "VRN-DT-8D6EFC6A" : ticketNumber));
 
-        // Данные для генерации QR-кода
         String qrContent = String.format(
-                "DEUTSCHLANDTICKET|Name:%s %s|DOB:%s|ValidFrom:%s|ValidTo:%s|TicketNo:%s",
+                "VRN|DEUTSCHLANDTICKET|Name:%s %s|DOB:%s|ValidFrom:%s|ValidTo:%s|ID:%s",
                 firstName, lastName, birthDate, validFrom, validTo, ticketNumber
         );
 
-        Bitmap qrBitmap = generateQrCodeBitmap(qrContent, 500, 500);
+        Bitmap qrBitmap = generateQrCodeBitmap(qrContent, 600, 600);
         if (qrBitmap != null) {
             ivQrCode.setImageBitmap(qrBitmap);
-            ivQrCode.setVisibility(View.VISIBLE);
+            cardTicket.setVisibility(View.VISIBLE);
         }
     }
 
