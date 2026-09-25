@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private CardView cardTicket;
     private CardView cardInputForm;
     private TextView tvTicketHeader;
-    private TextView tvPassengerInfo;
+    private TextView tvPassengerName;
+    private TextView tvPassengerDob;
     private TextView tvValidityInfo;
     private TextView tvTicketNumberInfo;
     private ImageView ivQrCode;
@@ -66,14 +67,15 @@ public class MainActivity extends AppCompatActivity {
         cardTicket = findViewById(R.id.cardTicket);
         cardInputForm = findViewById(R.id.cardInputForm);
         tvTicketHeader = findViewById(R.id.tvTicketHeader);
-        tvPassengerInfo = findViewById(R.id.tvPassengerInfo);
+        tvPassengerName = findViewById(R.id.tvPassengerName);
+        tvPassengerDob = findViewById(R.id.tvPassengerDob);
         tvValidityInfo = findViewById(R.id.tvValidityInfo);
         tvTicketNumberInfo = findViewById(R.id.tvTicketNumberInfo);
         ivQrCode = findViewById(R.id.ivQrCode);
 
         Button btnGenerate = findViewById(R.id.btnGenerate);
 
-        // Выбор дат
+        // Настройка дат
         setupDatePicker(etBirthDate);
         setupDatePicker(etValidFrom);
         setupDatePicker(etValidTo);
@@ -81,12 +83,12 @@ public class MainActivity extends AppCompatActivity {
         // 2D-вращение QR-кода при нажатии
         ivQrCode.setOnClickListener(this::spinQrCode2D);
 
-        // Нажатие на логотип VRN переключает видимость формы редактирования
+        // Переключение видимости по нажатию на VRN
         tvVrnLogo.setOnClickListener(v -> toggleInputForm());
 
         btnGenerate.setOnClickListener(v -> generateAndSaveTicket());
 
-        // Загрузка сохранённых данных
+        // Загрузка данных при запуске
         loadSavedTicketData();
     }
 
@@ -176,7 +178,6 @@ public class MainActivity extends AppCompatActivity {
 
         displayTicket(firstName, lastName, birthDate, validFrom, validTo, ticketId);
 
-        // Прячем форму ввода после генерации — остаётся только карточка билета
         cardInputForm.setVisibility(View.GONE);
     }
 
@@ -199,14 +200,15 @@ public class MainActivity extends AppCompatActivity {
                 ticketId = generateOrGetTicketId();
             }
             displayTicket(firstName, lastName, birthDate, validFrom, validTo, ticketId);
-            cardInputForm.setVisibility(View.GONE); // При запуске показываем только готовый билет
+            cardInputForm.setVisibility(View.GONE);
         }
     }
 
     private void displayTicket(String firstName, String lastName, String birthDate, String validFrom, String validTo, String ticketId) {
         tvTicketHeader.setText("Deutschlandticket");
-        tvPassengerInfo.setText(String.format("Inhaber: %s %s\nGeburtsdatum: %s", firstName, lastName, birthDate));
-        tvValidityInfo.setText(String.format("Gültig ab: %s\nGültig bis: %s", validFrom, validTo));
+        tvPassengerName.setText(String.format("%s %s", firstName, lastName));
+        tvPassengerDob.setText(birthDate);
+        tvValidityInfo.setText(String.format("%s - %s", validFrom, validTo));
         tvTicketNumberInfo.setText(String.format("ID Ticket: %s", ticketId));
 
         String qrContent = String.format(
@@ -214,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                 firstName, lastName, birthDate, validFrom, validTo, ticketId
         );
 
-        Bitmap qrBitmap = generateQrCodeBitmap(qrContent, 800, 800);
+        Bitmap qrBitmap = generateQrCodeBitmap(qrContent, 1000, 1000);
         if (qrBitmap != null) {
             ivQrCode.setImageBitmap(qrBitmap);
             cardTicket.setVisibility(View.VISIBLE);
