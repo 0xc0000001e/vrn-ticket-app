@@ -1,7 +1,5 @@
 package org.example;
 
-import org.example.R;
-
 import android.animation.ObjectAnimator;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -18,8 +16,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
@@ -39,14 +37,15 @@ public class MainActivity extends AppCompatActivity {
     private EditText etValidTo;
 
     private LinearLayout layoutTicketHeader;
-    private CardView cardTicket;
-    private CardView cardInputForm;
+    private LinearLayout layoutTicketContainer;
+    private LinearLayout cardInputForm;
     private TextView tvTicketHeader;
     private TextView tvPassengerName;
     private TextView tvPassengerDob;
     private TextView tvValidityInfo;
     private TextView tvTicketNumberInfo;
-    private ImageView ivQrCode;
+    private ImageView ivAztecCode;
+    private BottomNavigationView bottomNavigation;
 
     private SharedPreferences sharedPreferences;
 
@@ -65,29 +64,47 @@ public class MainActivity extends AppCompatActivity {
         etValidFrom = findViewById(R.id.etValidFrom);
         etValidTo = findViewById(R.id.etValidTo);
 
-        cardTicket = findViewById(R.id.cardTicket);
+        layoutTicketContainer = findViewById(R.id.layoutTicketContainer);
         cardInputForm = findViewById(R.id.cardInputForm);
         tvTicketHeader = findViewById(R.id.tvTicketHeader);
         tvPassengerName = findViewById(R.id.tvPassengerName);
         tvPassengerDob = findViewById(R.id.tvPassengerDob);
         tvValidityInfo = findViewById(R.id.tvValidityInfo);
         tvTicketNumberInfo = findViewById(R.id.tvTicketNumberInfo);
-        ivQrCode = findViewById(R.id.ivQrCode);
+        ivAztecCode = findViewById(R.id.ivAztecCode);
+        bottomNavigation = findViewById(R.id.bottomNavigation);
 
         Button btnGenerate = findViewById(R.id.btnGenerate);
 
-        // Настройка дат
+        // Настройка выбора дат
         setupDatePicker(etBirthDate);
         setupDatePicker(etValidFrom);
         setupDatePicker(etValidTo);
 
-        // 2D-вращение QR
-        ivQrCode.setOnClickListener(this::spinQrCode2D);
+        // Анимация вращения Aztec-кода по клику
+        ivAztecCode.setOnClickListener(this::spinAztecCode);
 
-        // Переключение формы при клике на шапку
+        // Клик по шапке для открытия редактирования
         layoutTicketHeader.setOnClickListener(v -> toggleInputForm());
 
         btnGenerate.setOnClickListener(v -> generateAndSaveTicket());
+
+        // Нижнее меню навигации
+        bottomNavigation.setSelectedItemId(R.id.nav_ticket);
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_ticket) {
+                if (layoutTicketContainer.getVisibility() == View.GONE) {
+                    layoutTicketContainer.setVisibility(View.VISIBLE);
+                    cardInputForm.setVisibility(View.GONE);
+                }
+                return true;
+            } else if (id == R.id.nav_search || id == R.id.nav_profile) {
+                // Вкладки заглушки
+                return true;
+            }
+            return false;
+        });
 
         // Загрузка
         loadSavedTicketData();
@@ -116,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    private void spinQrCode2D(View view) {
+    private void spinAztecCode(View view) {
         ObjectAnimator animator = ObjectAnimator.ofFloat(view, "rotation", 0f, 360f);
         animator.setDuration(800);
         animator.setInterpolator(new LinearInterpolator());
@@ -126,9 +143,11 @@ public class MainActivity extends AppCompatActivity {
     private void toggleInputForm() {
         if (cardInputForm.getVisibility() == View.VISIBLE) {
             cardInputForm.setVisibility(View.GONE);
+            layoutTicketContainer.setVisibility(View.VISIBLE);
             clearFocusAndHideKeyboard();
         } else {
             cardInputForm.setVisibility(View.VISIBLE);
+            layoutTicketContainer.setVisibility(View.GONE);
         }
     }
 
@@ -150,20 +169,24 @@ public class MainActivity extends AppCompatActivity {
         return newId;
     }
 
+    /**
+     * Расчет даты с 1-го по ПОСЛЕДНИЙ день ТЕКУЩЕГО месяца
+     */
     private String[] getCurrentMonthDates() {
         Calendar cal = Calendar.getInstance();
         int curYear = cal.get(Calendar.YEAR);
-        int curMonth = cal.get(Calendar.MONTH) + 1;
+        int curMonth = cal.get(Calendar.MONTH); // 0-based
 
-        String validFrom = String.format(Locale.GERMANY, "01.%02d.%04d", curMonth, curYear);
+        // 1-й день текущего месяца
+        String validFrom = String.format(Locale.GERMANY, "01.%02d.%04d", curMonth + 1, curYear);
 
-        cal.add(Calendar.MONTH, 1);
-        int nextYear = cal.get(Calendar.YEAR);
-        int nextMonth = cal.get(Calendar.MONTH) + 1;
+        // Последний день текущего месяца
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+        int lastDay = cal.get(Calendar.DAY_OF_MONTH);
 
-        String validTo = String.format(Locale.GERMANY, "01.%02d.%04d", nextMonth, nextYear);
+        String validTo = String.format(Locale.GERMANY, "%02d.%02d.%04d", lastDay, curMonth + 1, curYear);
 
-        return new String[]{validFrom, validTo, String.format(Locale.GERMANY, "%02d.%04d", curMonth, curYear)};
+        return new String[]{validFrom, validTo, String.format(Locale.GERMANY, "%02d.%04d", curMonth + 1, curYear)};
     }
 
     private void generateAndSaveTicket() {
@@ -202,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
 
         displayTicket(firstName, lastName, birthDate, validFrom, validTo, ticketId);
         cardInputForm.setVisibility(View.GONE);
+        layoutTicketContainer.setVisibility(View.VISIBLE);
     }
 
     private void loadSavedTicketData() {
@@ -238,8 +262,10 @@ public class MainActivity extends AppCompatActivity {
         if (!firstName.isEmpty() && !lastName.isEmpty() && !birthDate.isEmpty()) {
             displayTicket(firstName, lastName, birthDate, validFrom, validTo, ticketId);
             cardInputForm.setVisibility(View.GONE);
+            layoutTicketContainer.setVisibility(View.VISIBLE);
         } else {
             cardInputForm.setVisibility(View.VISIBLE);
+            layoutTicketContainer.setVisibility(View.GONE);
         }
     }
 
@@ -250,22 +276,25 @@ public class MainActivity extends AppCompatActivity {
         tvValidityInfo.setText(String.format("%s - %s", validFrom, validTo));
         tvTicketNumberInfo.setText(String.format("ID Ticket: %s", ticketId));
 
-        String qrContent = String.format(
+        String aztecContent = String.format(
                 "VRN|DEUTSCHLANDTICKET|Name:%s %s|DOB:%s|ValidFrom:%s|ValidTo:%s|ID:%s",
                 firstName, lastName, birthDate, validFrom, validTo, ticketId
         );
 
-        Bitmap qrBitmap = generateQrCodeBitmap(qrContent, 1400, 1400);
-        if (qrBitmap != null) {
-            ivQrCode.setImageBitmap(qrBitmap);
-            cardTicket.setVisibility(View.VISIBLE);
+        Bitmap aztecBitmap = generateAztecCodeBitmap(aztecContent, 1200, 1200);
+        if (aztecBitmap != null) {
+            ivAztecCode.setImageBitmap(aztecBitmap);
+            layoutTicketContainer.setVisibility(View.VISIBLE);
         }
     }
 
-    private Bitmap generateQrCodeBitmap(String text, int width, int height) {
+    /**
+     * Генератор кода типа AZTEC
+     */
+    private Bitmap generateAztecCodeBitmap(String text, int width, int height) {
         try {
             BitMatrix bitMatrix = new MultiFormatWriter().encode(
-                    text, BarcodeFormat.QR_CODE, width, height);
+                    text, BarcodeFormat.AZTEC, width, height);
             Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
