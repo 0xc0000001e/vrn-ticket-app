@@ -1,130 +1,224 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:background="#F4F6F9"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="20dp">
 
+        <!-- Главный заголовок VRN -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ticket-Daten eingeben"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="20dp"
+            android:text="VRN"
+            android:textColor="#004B93"
+            android:textSize="32sp"
+            android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/etFirstName"
+        <!-- Поля ввода данных -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Vorname"
-            android:inputType="textPersonName"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="20dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardUseCompatPadding="true">
 
-        <EditText
-            android:id="@+id/etLastName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nachname"
-            android:inputType="textPersonName"
-            android:layout_marginBottom="8dp" />
-
-        <EditText
-            android:id="@+id/etBirthDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Geburtsdatum (Datum wählen)"
-            android:focusable="false"
-            android:clickable="true"
-            android:layout_marginBottom="8dp" />
-
-        <EditText
-            android:id="@+id/etValidFrom"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Gültig ab (Datum wählen)"
-            android:focusable="false"
-            android:clickable="true"
-            android:layout_marginBottom="8dp" />
-
-        <EditText
-            android:id="@+id/etValidTo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Gültig bis (Datum wählen)"
-            android:focusable="false"
-            android:clickable="true"
-            android:layout_marginBottom="8dp" />
-
-        <EditText
-            android:id="@+id/etTicketNumber"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Ticket-Nummer"
-            android:inputType="text"
-            android:layout_marginBottom="16dp" />
-
-        <Button
-            android:id="@+id/btnGenerate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Ticket erstellen"
-            android:layout_marginBottom="24dp" />
-
-        <!-- Блок отображения билета -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="#F0F0F0"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/tvTicketHeader"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Deutschlandticket"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#000000"
-                android:layout_marginBottom="8dp" />
+                android:orientation="vertical"
+                android:padding="20dp">
 
-            <TextView
-                android:id="@+id/tvPassengerInfo"
-                android:layout_width="wrap_content"
+                <EditText
+                    android:id="@+id/etFirstName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:hint="Vorname"
+                    android:inputType="textPersonName"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/etLastName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:hint="Nachname"
+                    android:inputType="textPersonName"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/etBirthDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:hint="Geburtsdatum (Datum wählen)"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/etValidFrom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:hint="Gültig ab (Datum wählen)"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/etValidTo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:hint="Gültig bis (Datum wählen)"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/etTicketNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:hint="Ticket-Nummer"
+                    android:inputType="text"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:id="@+id/btnGenerate"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:backgroundTint="#004B93"
+                    android:text="Ticket erstellen"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Карточка готового билета -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardTicket"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
+            app:cardUseCompatPadding="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="#333333"
-                android:layout_marginBottom="4dp" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvValidityInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="#333333"
-                android:layout_marginBottom="4dp" />
+                <!-- Шапка билета -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#004B93"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-            <TextView
-                android:id="@+id/tvTicketNumberInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="#333333"
-                android:layout_marginBottom="12dp" />
+                    <TextView
+                        android:id="@+id/tvTicketHeader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Deutschlandticket"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
 
-            <ImageView
-                android:id="@+id/ivQrCode"
-                android:layout_width="250dp"
-                android:layout_height="250dp"
-                android:layout_gravity="center"
-                android:visibility="gone" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="VRN • Verkehrsverbund Rhein-Neckar"
+                        android:textColor="#B3D4FF"
+                        android:textSize="12sp" />
+                </LinearLayout>
 
-        </LinearLayout>
+                <!-- Содержимое билета -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <!-- Статус -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:background="#E8F5E9"
+                        android:paddingHorizontal="14dp"
+                        android:paddingVertical="6dp"
+                        android:text="● GÜLTIG"
+                        android:textColor="#2E7D32"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <!-- QR-КОД НА САМОМ ВЕРХУ -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/ivQrCode"
+                            android:layout_width="230dp"
+                            android:layout_height="230dp"
+                            android:contentDescription="QR Code" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Auf QR-Code tippen zum Drehen 🔄"
+                            android:textColor="#888888"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <!-- Данные пассажира и билета -->
+                    <TextView
+                        android:id="@+id/tvPassengerInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="#222222"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/tvValidityInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="#222222"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/tvTicketNumberInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#555555"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
     </LinearLayout>
 </ScrollView>
