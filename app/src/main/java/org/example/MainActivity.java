@@ -17,12 +17,9 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -44,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         try {
-            // Инициализация View компонентов
             qrCodeImage = findViewById(R.id.qrCodeImage);
             tvPassengerName = findViewById(R.id.tvPassengerName);
             tvPassengerDob = findViewById(R.id.tvPassengerDob);
@@ -54,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
             securityBlock = findViewById(R.id.securityBlock);
             bottomNavigation = findViewById(R.id.bottomNavigation);
 
-            // Обработка нижнего меню
             if (bottomNavigation != null) {
                 bottomNavigation.setSelectedItemId(R.id.nav_fahrkarten);
                 bottomNavigation.setOnItemSelectedListener(item -> {
@@ -63,10 +58,18 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
 
-            // Инициализация объектов моделей с безопасной обработкой
-            setupTicketData();
+            // Данные пассажира
+            String ticketId = "VRN-DT-89230492";
+            String passengerName = "Max Mustermann";
+            LocalDate birthDate = LocalDate.of(1990, 1, 1);
+            
+            // Дата начала действия (например, 1 октября 2026)
+            LocalDate startDate = LocalDate.of(2026, 10, 1);
 
-            // Безопасный запуск анимации
+            // Вычисляем последний день ТОГО ЖЕ месяца
+            LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+
+            displayTicketData(ticketId, passengerName, birthDate, endDate);
             startSecurityShimmerAnimation();
 
         } catch (Exception e) {
@@ -74,51 +77,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setupTicketData() {
-        try {
-            LocalDate birthDate = LocalDate.of(1990, 1, 1);
-            Passenger passenger = new Passenger("Max", "Mustermann", birthDate, "max.mustermann@example.com");
-
-            TicketStatus status = TicketStatus.values().length > 0 ? TicketStatus.values()[0] : null;
-            String ticketId = "VRN-DT-89230492";
-            YearMonth validityMonth = YearMonth.of(2026, 10);
-            BigDecimal price = new BigDecimal("49.00");
-            String cardNumber = "DE89370001";
-            EnumSet<TransitType> transitTypes = EnumSet.allOf(TransitType.class);
-
-            DeutschlandTicket ticket = new DeutschlandTicket(
-                    ticketId,
-                    passenger,
-                    validityMonth,
-                    price,
-                    cardNumber,
-                    status,
-                    transitTypes
-            );
-
-            displayTicketData(ticketId, "Max Mustermann", birthDate, validityMonth);
-        } catch (Exception e) {
-            Log.e(TAG, "Error setting up ticket data", e);
-        }
-    }
-
-    private void displayTicketData(String ticketId, String passengerName, LocalDate birthDate, YearMonth validityMonth) {
+    private void displayTicketData(String ticketId, String passengerName, LocalDate birthDate, LocalDate endDate) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
         String formattedDob = birthDate.format(dateFormatter);
-        LocalDate validUntilDate = validityMonth.atEndOfMonth();
-        String formattedValidUntil = validUntilDate.format(dateFormatter);
+        String formattedValidUntil = endDate.format(dateFormatter);
 
         if (tvPassengerName != null) tvPassengerName.setText(passengerName);
         if (tvPassengerDob != null) tvPassengerDob.setText(formattedDob);
         if (tvValidityInfo != null) tvValidityInfo.setText(formattedValidUntil);
         if (tvTicketNumberInfo != null) tvTicketNumberInfo.setText(ticketId);
 
-        String barcodeData = String.format("VRN|%s|%s|%s",
-                ticketId,
-                passengerName,
-                formattedValidUntil);
-
+        // Формирование данных для Aztec-кода
+        String barcodeData = String.format("VRN|%s|%s|%s", ticketId, passengerName, formattedValidUntil);
         generateDenseAztecCode(barcodeData);
     }
 
@@ -127,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             Map<EncodeHintType, Object> hints = new EnumMap<>(EncodeHintType.class);
-            hints.put(EncodeHintType.MARGIN, 0);
+            hints.put(EncodeHintType.MARGIN, 0); // Максимально плотный код без рамок
 
             MultiFormatWriter writer = new MultiFormatWriter();
             BitMatrix bitMatrix = writer.encode(data, BarcodeFormat.AZTEC, 600, 600, hints);
@@ -157,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 int shimmerWidth = shimmerBar.getWidth();
 
                 if (parentWidth <= 0) parentWidth = 1000;
-                if (shimmerWidth <= 0) shimmerWidth = 200;
+                if (shimmerWidth <= 0) shimmerWidth = 150;
 
                 ObjectAnimator animator = ObjectAnimator.ofFloat(
                         shimmerBar,
@@ -165,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                         -shimmerWidth,
                         parentWidth
                 );
-                animator.setDuration(2000);
+                animator.setDuration(2200);
                 animator.setRepeatCount(ValueAnimator.INFINITE);
                 animator.setRepeatMode(ValueAnimator.REVERSE);
                 animator.start();
