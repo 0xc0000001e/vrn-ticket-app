@@ -3,6 +3,7 @@ name: Build Android APK
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -18,6 +19,14 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build Code
-        run: |
-          echo "Building project..."
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build Debug APK
+        run: gradle assembleDebug
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VRN-Ticket-App-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
