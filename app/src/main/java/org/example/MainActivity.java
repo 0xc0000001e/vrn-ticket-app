@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Инициализация View
+        // Инициализация верстки по корректным ID
         qrCodeImage = findViewById(R.id.qrCodeImage);
         tvPassengerName = findViewById(R.id.tvPassengerName);
         tvPassengerDob = findViewById(R.id.tvPassengerDob);
@@ -45,17 +45,24 @@ public class MainActivity extends AppCompatActivity {
         securityBlock = findViewById(R.id.securityBlock);
         bottomNavigation = findViewById(R.id.bottomNavigation);
 
-        // Выбираем вкладку Fahrkarten по центру
+        // Активная вкладка Fahrkarten (по центру)
         bottomNavigation.setSelectedItemId(R.id.nav_fahrkarten);
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_fahrkarten || itemId == R.id.nav_fahrplan || itemId == R.id.nav_profil) {
+                return true;
+            }
+            return false;
+        });
 
-        // Пример инициализации объектов из вашей структуры
+        // Создаем данные билета с использованием ваших классов данных
         Passenger passenger = new Passenger("Max", "Mustermann", "01.01.1990");
         DeutschlandTicket ticket = new DeutschlandTicket("VRN-DT-89230492", passenger, "01.10.2026", "31.10.2026");
 
-        // Отображение данных билета
+        // Отображение билета
         displayTicketData(ticket);
 
-        // Запуск бегающей полосы защиты от скриншота
+        // Анимация защитного блока
         startSecurityShimmerAnimation();
     }
 
@@ -65,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
         tvValidityInfo.setText(ticket.getValidTo());
         tvTicketNumberInfo.setText(ticket.getTicketId());
 
-        // Генерация плотного Aztec-кода
         String barcodeData = String.format("VRN|%s|%s|%s", 
                 ticket.getTicketId(), 
                 ticket.getPassengerName(), 
@@ -77,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
     private void generateDenseAztecCode(String data) {
         try {
             Map<EncodeHintType, Object> hints = new EnumMap<>(EncodeHintType.class);
-            // Нулевые поля (MARGIN = 0) для максимальной плотности
             hints.put(EncodeHintType.MARGIN, 0);
 
             MultiFormatWriter writer = new MultiFormatWriter();
