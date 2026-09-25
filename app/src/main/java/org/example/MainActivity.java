@@ -39,12 +39,12 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView tvVrnLogo;
     private CardView cardTicket;
+    private CardView cardInputForm;
     private TextView tvTicketHeader;
     private TextView tvPassengerInfo;
     private TextView tvValidityInfo;
     private TextView tvTicketNumberInfo;
     private ImageView ivQrCode;
-    private Button btnGenerate;
 
     private SharedPreferences sharedPreferences;
 
@@ -64,12 +64,14 @@ public class MainActivity extends AppCompatActivity {
         etValidTo = findViewById(R.id.etValidTo);
 
         cardTicket = findViewById(R.id.cardTicket);
+        cardInputForm = findViewById(R.id.cardInputForm);
         tvTicketHeader = findViewById(R.id.tvTicketHeader);
         tvPassengerInfo = findViewById(R.id.tvPassengerInfo);
         tvValidityInfo = findViewById(R.id.tvValidityInfo);
         tvTicketNumberInfo = findViewById(R.id.tvTicketNumberInfo);
         ivQrCode = findViewById(R.id.ivQrCode);
-        btnGenerate = findViewById(R.id.btnGenerate);
+
+        Button btnGenerate = findViewById(R.id.btnGenerate);
 
         // Выбор дат
         setupDatePicker(etBirthDate);
@@ -79,14 +81,10 @@ public class MainActivity extends AppCompatActivity {
         // 2D-вращение QR-кода при нажатии
         ivQrCode.setOnClickListener(this::spinQrCode2D);
 
-        // Нажатие на логотип VRN заменяет кнопку генерации
-        tvVrnLogo.setOnClickListener(v -> generateAndSaveTicket());
+        // Нажатие на логотип VRN переключает видимость формы редактирования
+        tvVrnLogo.setOnClickListener(v -> toggleInputForm());
 
-        // Нижняя кнопка генерации
-        btnGenerate.setOnClickListener(v -> {
-            generateAndSaveTicket();
-            btnGenerate.setVisibility(View.GONE); // Скрывается после нажатия
-        });
+        btnGenerate.setOnClickListener(v -> generateAndSaveTicket());
 
         // Загрузка сохранённых данных
         loadSavedTicketData();
@@ -95,10 +93,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupDatePicker(EditText editText) {
         editText.setFocusable(false);
         editText.setClickable(true);
-        editText.setOnClickListener(v -> {
-            btnGenerate.setVisibility(View.VISIBLE); // Показываем кнопку при изменении полей
-            showDatePickerDialog(editText);
-        });
+        editText.setOnClickListener(v -> showDatePickerDialog(editText));
     }
 
     private void showDatePickerDialog(EditText targetEditText) {
@@ -123,6 +118,15 @@ public class MainActivity extends AppCompatActivity {
         animator.setDuration(800);
         animator.setInterpolator(new LinearInterpolator());
         animator.start();
+    }
+
+    private void toggleInputForm() {
+        if (cardInputForm.getVisibility() == View.VISIBLE) {
+            cardInputForm.setVisibility(View.GONE);
+            clearFocusAndHideKeyboard();
+        } else {
+            cardInputForm.setVisibility(View.VISIBLE);
+        }
     }
 
     private void clearFocusAndHideKeyboard() {
@@ -161,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
 
         String ticketId = generateOrGetTicketId();
 
-        // Сохранение данных
+        // Сохранение
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("firstName", firstName);
         editor.putString("lastName", lastName);
@@ -171,6 +175,9 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
 
         displayTicket(firstName, lastName, birthDate, validFrom, validTo, ticketId);
+
+        // Прячем форму ввода после генерации — остаётся только карточка билета
+        cardInputForm.setVisibility(View.GONE);
     }
 
     private void loadSavedTicketData() {
@@ -192,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                 ticketId = generateOrGetTicketId();
             }
             displayTicket(firstName, lastName, birthDate, validFrom, validTo, ticketId);
-            btnGenerate.setVisibility(View.GONE); // Скрываем нижнюю кнопку, если билет уже создан
+            cardInputForm.setVisibility(View.GONE); // При запуске показываем только готовый билет
         }
     }
 
@@ -207,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
                 firstName, lastName, birthDate, validFrom, validTo, ticketId
         );
 
-        Bitmap qrBitmap = generateQrCodeBitmap(qrContent, 600, 600);
+        Bitmap qrBitmap = generateQrCodeBitmap(qrContent, 800, 800);
         if (qrBitmap != null) {
             ivQrCode.setImageBitmap(qrBitmap);
             cardTicket.setVisibility(View.VISIBLE);
