@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         mainLayout.setPadding(40, 40, 40, 40);
         scrollView.addView(mainLayout);
 
-        // 1. Форма ввода данных (Formular)
+        // 1. Форма ввода данных
         formLayout = new LinearLayout(this);
         formLayout.setOrientation(LinearLayout.VERTICAL);
 
@@ -48,13 +48,13 @@ public class MainActivity extends AppCompatActivity {
         tvTitle.setPadding(0, 0, 0, 30);
         formLayout.addView(tvTitle);
 
-        etFirstName = createInputField("Vorname (Имя)", "z.B. Alex");
-        etLastName = createInputField("Nachname (Фамилия)", "z.B. Müller");
-        etDob = createInputField("Geburtsdatum (Дата рожд. ДД.ММ.ГГГГ)", "z.B. 12.04.1998");
-        etDocNum = createInputField("Ausweisnummer (Номер документа)", "z.B. DE987654321");
+        etFirstName = createInputField("Vorname", "z.B. Alex");
+        etLastName = createInputField("Nachname", "z.B. Müller");
+        etDob = createInputField("Geburtsdatum (DD.MM.YYYY)", "z.B. 12.04.1998");
+        etDocNum = createInputField("Ausweisnummer", "z.B. DE987654321");
 
         Button btnGenerate = new Button(this);
-        btnGenerate.setText("Ticket erstellen (Создать билет)");
+        btnGenerate.setText("Ticket erstellen");
         btnGenerate.setPadding(20, 20, 20, 20);
         btnGenerate.setOnClickListener(v -> generateTicket());
         formLayout.addView(btnGenerate);
@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
         tvTicketDetails.setTextSize(16);
         tvTicketDetails.setPadding(0, 20, 0, 20);
 
-        // Блок QR-кода
         tvQrCode = new TextView(this);
         tvQrCode.setText(" [ QR-CODE ] \n\n[ █ ▄ █ ▄ █ ]\n[ ▄ █ ▄ █ ▄ ]\n[ █ ▄ █ ▄ █ ]\n\n(Tippen zum Drehen)");
         tvQrCode.setTextSize(16);
@@ -79,11 +78,10 @@ public class MainActivity extends AppCompatActivity {
         tvQrCode.setBackgroundColor(Color.LTGRAY);
         tvQrCode.setPadding(40, 60, 40, 60);
 
-        // Вращение QR-кода при нажатии
-        tvQrCode.setOnClickListener(v -> spinQrCode(v));
+        tvQrCode.setOnClickListener(this::spinQrCode);
 
         Button btnBack = new Button(this);
-        btnBack.setText("Daten ändern (Изменить данные)");
+        btnBack.setText("Daten ändern");
         btnBack.setOnClickListener(v -> {
             ticketLayout.setVisibility(View.GONE);
             formLayout.setVisibility(View.VISIBLE);
@@ -127,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
             dob = LocalDate.parse(dobStr, formatter);
         } catch (Exception e) {
-            Toast.makeText(this, "Datum Format: DD.MM.YYYY (z.B. 12.04.1998)", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Format: DD.MM.YYYY (z.B. 12.04.1998)", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -155,10 +153,9 @@ public class MainActivity extends AppCompatActivity {
         ticketLayout.setVisibility(View.VISIBLE);
     }
 
-    // Метод 3D-вращения QR-кода на 360 градусов
     private void spinQrCode(View view) {
         ObjectAnimator animator = ObjectAnimator.ofFloat(view, "rotationY", 0f, 360f);
-        animator.setDuration(800); // время вращения в миллисекундах
+        animator.setDuration(800);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
         animator.start();
     }
