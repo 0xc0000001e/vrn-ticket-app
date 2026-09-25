@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
         android:backgroundTint="#005B9A"
-        android:elevation="6dp"
+        android:elevation="4dp"
         app:cornerSize="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,7 +31,7 @@
             android:textStyle="bold" />
     </com.google.android.material.appbar.MaterialToolbar>
 
-    <!-- 2. Единая карточка билета -->
+    <!-- 2. Единая карточка билета (между шапкой и нижним меню) -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/ticketCard"
         android:layout_width="0dp"
@@ -39,7 +39,7 @@
         android:layout_margin="12dp"
         app:cardBackgroundColor="#FFFFFF"
         app:cardCornerRadius="20dp"
-        app:cardElevation="8dp"
+        app:cardElevation="6dp"
         app:strokeWidth="0dp"
         app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent"
@@ -66,7 +66,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- Плотный Aztec/QR код -->
+            <!-- Плотный Aztec-код -->
             <ImageView
                 android:id="@+id/qrCodeImage"
                 android:layout_width="0dp"
@@ -75,12 +75,12 @@
                 android:scaleType="fitCenter"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHeight_max="240dp"
+                app:layout_constraintHeight_max="230dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvStatus"
                 tools:srcCompat="@android:drawable/ic_menu_gallery" />
 
-            <!-- Таблица данных пассажира -->
+            <!-- Таблица данных пассажира (две колонки + шрифт Courier/Monospace) -->
             <TableLayout
                 android:id="@+id/dataTable"
                 android:layout_width="0dp"
@@ -94,12 +94,13 @@
                 <TableRow android:paddingVertical="4dp">
                     <TextView
                         android:text="Inhaber"
-                        android:textColor="#666666"
+                        android:textColor="#555555"
                         android:textSize="14sp"
                         android:textStyle="bold" />
                     <TextView
                         android:id="@+id/tvPassengerName"
                         android:gravity="end"
+                        android:fontFamily="monospace"
                         android:textColor="#111111"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -109,11 +110,12 @@
                 <TableRow android:paddingVertical="4dp">
                     <TextView
                         android:text="Geburtsdatum"
-                        android:textColor="#666666"
+                        android:textColor="#555555"
                         android:textSize="14sp" />
                     <TextView
                         android:id="@+id/tvPassengerDob"
                         android:gravity="end"
+                        android:fontFamily="monospace"
                         android:textColor="#111111"
                         android:textSize="14sp"
                         tools:text="01.01.1990" />
@@ -122,11 +124,12 @@
                 <TableRow android:paddingVertical="4dp">
                     <TextView
                         android:text="Gültig bis"
-                        android:textColor="#666666"
+                        android:textColor="#555555"
                         android:textSize="14sp" />
                     <TextView
                         android:id="@+id/tvValidityInfo"
                         android:gravity="end"
+                        android:fontFamily="monospace"
                         android:textColor="#00875A"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -136,18 +139,19 @@
                 <TableRow android:paddingVertical="4dp">
                     <TextView
                         android:text="Ticket ID"
-                        android:textColor="#666666"
+                        android:textColor="#555555"
                         android:textSize="14sp" />
                     <TextView
                         android:id="@+id/tvTicketNumberInfo"
                         android:gravity="end"
+                        android:fontFamily="monospace"
                         android:textColor="#111111"
                         android:textSize="14sp"
                         tools:text="VRN-DT-89230492" />
                 </TableRow>
             </TableLayout>
 
-            <!-- Блок защиты от скриншотов -->
+            <!-- Блок защиты от скриншотов с бегающей блик-полоской -->
             <FrameLayout
                 android:id="@+id/securityBlock"
                 android:layout_width="0dp"
@@ -164,7 +168,7 @@
                     android:id="@+id/shimmerBar"
                     android:layout_width="60dp"
                     android:layout_height="match_parent"
-                    android:background="#99FFFFFF" />
+                    android:background="#66FFFFFF" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -179,13 +183,13 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- 3. Нижнее меню навигации -->
+    <!-- 3. Нижнее меню -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
-        app:elevation="12dp"
+        app:elevation="8dp"
         app:menu="@menu/bottom_nav_menu"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
