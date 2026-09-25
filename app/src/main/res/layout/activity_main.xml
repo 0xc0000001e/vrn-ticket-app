@@ -1,269 +1,198 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="#F2F4F7">
 
-    <!-- ОСНОВНОЙ КОНТЕНТ (СНОЛЛ) -->
-    <ScrollView
-        android:id="@+id/mainScrollView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/bottomNavigation"
-        android:fillViewport="true">
+    <!-- 1. Отдельная шапка -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/headerCard"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:backgroundTint="#005B9A"
+        android:elevation="6dp"
+        app:cornerSize="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tvTicketHeader"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_gravity="center"
+            android:text="VRN - Deutschlandticket"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </com.google.android.material.appbar.MaterialToolbar>
 
-            <!-- БИЛЕТ БЕЗ ЭФФЕКТА КАРТОЧКИ (FLAT DESIGN) -->
-            <LinearLayout
-                android:id="@+id/layoutTicketContainer"
-                android:layout_width="match_parent"
+    <!-- 2. Единая карточка билета -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/ticketCard"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="12dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="8dp"
+        app:strokeWidth="0dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerCard">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp">
+
+            <!-- Статус Gültig -->
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
+                android:background="#E8F5E9"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:text="● GÜLTIG"
+                android:textColor="#2E7D32"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <!-- ШАПКА БИЛЕТА (КЛИКАБЕЛЬНАЯ ДЛЯ РЕДАКТИРОВАНИЯ) -->
-                <LinearLayout
-                    android:id="@+id/layoutTicketHeader"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#004B93"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:orientation="vertical"
-                    android:paddingHorizontal="20dp"
-                    android:paddingVertical="18dp">
+            <!-- Плотный Aztec/QR код -->
+            <ImageView
+                android:id="@+id/qrCodeImage"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="8dp"
+                android:scaleType="fitCenter"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_max="240dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvStatus"
+                tools:srcCompat="@android:drawable/ic_menu_gallery" />
 
-                    <TextView
-                        android:id="@+id/tvTicketHeader"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:letterSpacing="0.02"
-                        android:text="VRN Ticket"
-                        android:textColor="#FFFFFF"
-                        android:textSize="24sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Verkehrsverbund Rhein-Neckar"
-                        android:textColor="#B3D4FF"
-                        android:textSize="13sp" />
-                </LinearLayout>
-
-                <!-- СОДЕРЖИМОЕ БИЛЕТА -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
-
-                    <!-- СТАТУС GÜLTIG В ЛЕВОЙ ЧАСТИ -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:background="#E8F5E9"
-                        android:paddingHorizontal="14dp"
-                        android:paddingVertical="6dp"
-                        android:text="● GÜLTIG"
-                        android:textColor="#2E7D32"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-
-                    <!-- БОЛЬШОЙ AZTEC-КОД -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="24dp"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:id="@+id/ivAztecCode"
-                            android:layout_width="340dp"
-                            android:layout_height="340dp"
-                            android:contentDescription="Aztec Code" />
-                    </LinearLayout>
-
-                    <!-- ИНФОРМАЦИЯ О ПАССАЖИРЕ И БИЛЕТЕ -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="#F8F9FA"
-                        android:orientation="vertical"
-                        android:padding="18dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="NAME DES INHABERS"
-                            android:textColor="#777777"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvPassengerName"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="14dp"
-                            android:fontFamily="monospace"
-                            android:textColor="#111111"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="GEBURTSDATUM"
-                            android:textColor="#777777"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvPassengerDob"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="14dp"
-                            android:fontFamily="monospace"
-                            android:textColor="#222222"
-                            android:textSize="16sp" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginVertical="10dp"
-                            android:background="#E0E0E0" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="GÜLTIGKEITSZEITRAUM"
-                            android:textColor="#777777"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvValidityInfo"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="14dp"
-                            android:fontFamily="monospace"
-                            android:textColor="#222222"
-                            android:textSize="16sp" />
-
-                        <TextView
-                            android:id="@+id/tvTicketNumberInfo"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="#EEEEEE"
-                            android:fontFamily="monospace"
-                            android:padding="12dp"
-                            android:textColor="#444444"
-                            android:textSize="13sp" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- ФОРМА ВВОДА (БЕЗ КАРТОЧКИ) -->
-            <LinearLayout
-                android:id="@+id/cardInputForm"
-                android:layout_width="match_parent"
+            <!-- Данные в 2 колонки -->
+            <TableLayout
+                android:id="@+id/dataTable"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
+                android:layout_marginTop="12dp"
+                android:stretchColumns="1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/qrCodeImage">
+
+                <!-- Ряд 1: Inhaber -->
+                <TableRow android:paddingVertical="4dp">
+                    <TextView
+                        android:text="Inhaber"
+                        android:textColor="#666666"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/tvPassengerName"
+                        android:gravity="end"
+                        android:textColor="#111111"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        tools:text="Max Mustermann" />
+                </TableRow>
+
+                <!-- Ряд 2: Geburtsdatum -->
+                <TableRow android:paddingVertical="4dp">
+                    <TextView
+                        android:text="Geburtsdatum"
+                        android:textColor="#666666"
+                        android:textSize="14sp" />
+                    <TextView
+                        android:id="@+id/tvPassengerDob"
+                        android:gravity="end"
+                        android:textColor="#111111"
+                        android:textSize="14sp"
+                        tools:text="01.01.1990" />
+                </TableRow>
+
+                <!-- Ряд 3: Gültig bis -->
+                <TableRow android:paddingVertical="4dp">
+                    <TextView
+                        android:text="Gültig bis"
+                        android:textColor="#666666"
+                        android:textSize="14sp" />
+                    <TextView
+                        android:id="@+id/tvValidityInfo"
+                        android:gravity="end"
+                        android:textColor="#00875A"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        tools:text="31.10.2026" />
+                </TableRow>
+
+                <!-- Ряд 4: Ticket ID -->
+                <TableRow android:paddingVertical="4dp">
+                    <TextView
+                        android:text="Ticket ID"
+                        android:textColor="#666666"
+                        android:textSize="14sp" />
+                    <TextView
+                        android:id="@+id/tvTicketNumberInfo"
+                        android:gravity="end"
+                        android:textColor="#111111"
+                        android:textSize="14sp"
+                        tools:text="VRN-DT-89230492" />
+                </TableRow>
+            </TableLayout>
+
+            <!-- Блок защиты от скриншотов с бегающим бликом -->
+            <FrameLayout
+                android:id="@+id/securityBlock"
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_marginTop="12dp"
+                android:background="#1E293B"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/dataTable"
+                app:layout_constraintVertical_bias="1.0">
+
+                <View
+                    android:id="@+id/shimmerBar"
+                    android:layout_width="60dp"
+                    android:layout_height="match_parent"
+                    android:background="#99FFFFFF" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:text="Daten bearbeiten"
-                    android:textColor="#004B93"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/etFirstName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:hint="Vorname"
-                    android:inputType="textPersonName"
-                    android:textSize="15sp" />
-
-                <EditText
-                    android:id="@+id/etLastName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:hint="Nachname"
-                    android:inputType="textPersonName"
-                    android:textSize="15sp" />
-
-                <EditText
-                    android:id="@+id/etBirthDate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:clickable="true"
-                    android:focusable="false"
-                    android:hint="Geburtsdatum (Datum wählen)"
-                    android:textSize="15sp" />
-
-                <EditText
-                    android:id="@+id/etValidFrom"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:clickable="true"
-                    android:focusable="false"
-                    android:hint="Gültig ab (z.B. 01.10.2026)"
-                    android:textSize="15sp" />
-
-                <EditText
-                    android:id="@+id/etValidTo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:clickable="true"
-                    android:focusable="false"
-                    android:hint="Gültig bis (z.B. 31.10.2026)"
-                    android:textSize="15sp" />
-
-                <Button
-                    android:id="@+id/btnGenerate"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:backgroundTint="#004B93"
-                    android:text="Ticket erstellen"
+                    android:layout_gravity="center"
+                    android:text="• VRN Dynamic Security Check •"
                     android:textColor="#FFFFFF"
-                    android:textSize="16sp"
+                    android:textSize="11sp"
                     android:textStyle="bold" />
+            </FrameLayout>
 
-            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 
-        </LinearLayout>
-    </ScrollView>
-
-    <!-- НИЖНЕЕ МЕНЮ НАВИГАЦИИ -->
+    <!-- 3. Нижнее меню навигации -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:background="#FFFFFF"
-        app:elevation="8dp"
-        app:itemIconTint="#004B93"
-        app:itemTextColor="#004B93"
-        app:menu="@menu/bottom_nav_menu" />
+        app:elevation="12dp"
+        app:menu="@menu/bottom_nav_menu"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
