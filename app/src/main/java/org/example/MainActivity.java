@@ -16,7 +16,12 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Инициализация верстки по корректным ID
+        // Инициализация UI компонентов
         qrCodeImage = findViewById(R.id.qrCodeImage);
         tvPassengerName = findViewById(R.id.tvPassengerName);
         tvPassengerDob = findViewById(R.id.tvPassengerDob);
@@ -45,38 +50,65 @@ public class MainActivity extends AppCompatActivity {
         securityBlock = findViewById(R.id.securityBlock);
         bottomNavigation = findViewById(R.id.bottomNavigation);
 
-        // Активная вкладка Fahrkarten (по центру)
+        // Активная вкладка Fahrkarten
         bottomNavigation.setSelectedItemId(R.id.nav_fahrkarten);
         bottomNavigation.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
-            if (itemId == R.id.nav_fahrkarten || itemId == R.id.nav_fahrplan || itemId == R.id.nav_profil) {
-                return true;
-            }
-            return false;
+            return itemId == R.id.nav_fahrkarten || itemId == R.id.nav_fahrplan || itemId == R.id.nav_profil;
         });
 
-        // Создаем данные билета с использованием ваших классов данных
-        Passenger passenger = new Passenger("Max", "Mustermann", "01.01.1990");
-        DeutschlandTicket ticket = new DeutschlandTicket("VRN-DT-89230492", passenger, "01.10.2026", "31.10.2026");
+        // Создаем Пассажира с использованием LocalDate
+        LocalDate birthDate = LocalDate.of(1990, 1, 1);
+        Passenger passenger = new Passenger("Max", "Mustermann", birthDate, "max.mustermann@example.com");
 
-        // Отображение билета
+        // Создаем Билет согласно конструктору класса DeutschlandTicket
+        String ticketId = "VRN-DT-89230492";
+        YearMonth validityMonth = YearMonth.of(2026, 10);
+        BigDecimal price = new BigDecimal("49.00");
+        String cardNumber = "DE89370001";
+        TicketStatus status = TicketStatus.VALID; // Использование перечисления TicketStatus
+        EnumSet<TransitType> transitTypes = EnumSet.allOf(TransitType.class); // Все типы транспорта
+
+        DeutschlandTicket ticket = new DeutschlandTicket(
+                ticketId,
+                passenger,
+                validityMonth,
+                price,
+                cardNumber,
+                status,
+                transitTypes
+        );
+
+        // Отображение данных билета
         displayTicketData(ticket);
 
-        // Анимация защитного блока
+        // Запуск динамической полосы защиты
         startSecurityShimmerAnimation();
     }
 
     private void displayTicketData(DeutschlandTicket ticket) {
-        tvPassengerName.setText(ticket.getPassengerName());
-        tvPassengerDob.setText(ticket.getPassengerDob());
-        tvValidityInfo.setText(ticket.getValidTo());
+        Passenger passenger = ticket.getPassenger();
+
+        // Форматирование даты рождения и срока действия
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        String fullName = passenger.getFirstName() + " " + passenger.getLastName();
+        String formattedDob = passenger.getBirthDate().format(dateFormatter);
+        
+        // Конец месяца действия билета (например, 31.10.2026)
+        LocalDate validUntilDate = ticket.getValidityMonth().atEndOfMonth();
+        String formattedValidUntil = validUntilDate.format(dateFormatter);
+
+        tvPassengerName.setText(fullName);
+        tvPassengerDob.setText(formattedDob);
+        tvValidityInfo.setText(formattedValidUntil);
         tvTicketNumberInfo.setText(ticket.getTicketId());
 
-        String barcodeData = String.format("VRN|%s|%s|%s", 
-                ticket.getTicketId(), 
-                ticket.getPassengerName(), 
-                ticket.getValidTo());
-        
+        // Формирование строки для Aztec-кода
+        String barcodeData = String.format("VRN|%s|%s|%s",
+                ticket.getTicketId(),
+                fullName,
+                formattedValidUntil);
+
         generateDenseAztecCode(barcodeData);
     }
 
