@@ -3,12 +3,14 @@
 
     <application
         android:allowBackup="true"
-        android:label="VRN Ticket App"
+        android:icon="@drawable/ic_launcher_foreground"
+        android:label="VRN Ticket"
+        android:roundIcon="@drawable/ic_launcher_foreground"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
         <activity
-            android:name="org.example.MainActivity"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
