@@ -16,13 +16,18 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Главный заголовок VRN -->
+        <!-- КЛИКАБЕЛЬНЫЙ ЗАГОЛОВОК VRN (МАСКИРОВКА КНОПКИ) -->
         <TextView
+            android:id="@+id/tvVrnLogo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"
             android:text="VRN"
             android:textColor="#004B93"
             android:textSize="32sp"
@@ -117,8 +122,17 @@
                         android:id="@+id/tvValidityInfo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
                         android:textColor="#222222"
                         android:textSize="15sp" />
+
+                    <!-- ID TICKET -->
+                    <TextView
+                        android:id="@+id/tvTicketNumberInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#555555"
+                        android:textSize="14sp" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -143,7 +157,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:text="Daten bearbeiten / Ticket erstellen"
+                    android:text="Daten bearbeiten"
                     android:textColor="#004B93"
                     android:textSize="16sp"
                     android:textStyle="bold" />
