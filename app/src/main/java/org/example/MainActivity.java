@@ -10,7 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -34,13 +35,11 @@ public class MainActivity extends AppCompatActivity {
     private EditText etBirthDate;
     private EditText etValidFrom;
     private EditText etValidTo;
-    private EditText etTicketNumber;
 
     private CardView cardTicket;
     private TextView tvTicketHeader;
     private TextView tvPassengerInfo;
     private TextView tvValidityInfo;
-    private TextView tvTicketNumberInfo;
     private ImageView ivQrCode;
 
     private SharedPreferences sharedPreferences;
@@ -58,13 +57,11 @@ public class MainActivity extends AppCompatActivity {
         etBirthDate = findViewById(R.id.etBirthDate);
         etValidFrom = findViewById(R.id.etValidFrom);
         etValidTo = findViewById(R.id.etValidTo);
-        etTicketNumber = findViewById(R.id.etTicketNumber);
 
         cardTicket = findViewById(R.id.cardTicket);
         tvTicketHeader = findViewById(R.id.tvTicketHeader);
         tvPassengerInfo = findViewById(R.id.tvPassengerInfo);
         tvValidityInfo = findViewById(R.id.tvValidityInfo);
-        tvTicketNumberInfo = findViewById(R.id.tvTicketNumberInfo);
         ivQrCode = findViewById(R.id.ivQrCode);
 
         Button btnGenerate = findViewById(R.id.btnGenerate);
@@ -74,12 +71,12 @@ public class MainActivity extends AppCompatActivity {
         setupDatePicker(etValidFrom);
         setupDatePicker(etValidTo);
 
-        // Анимация вращения QR-кода при нажатии
-        ivQrCode.setOnClickListener(this::spinQrCode);
+        // 2D-вращение QR-кода при нажатии
+        ivQrCode.setOnClickListener(this::spinQrCode2D);
 
         btnGenerate.setOnClickListener(v -> generateAndSaveTicket());
 
-        // Загрузка сохранённых данных при старте
+        // Загрузка сохранённых данных
         loadSavedTicketData();
     }
 
@@ -106,37 +103,49 @@ public class MainActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    private void spinQrCode(View view) {
-        ObjectAnimator animator = ObjectAnimator.ofFloat(view, "rotationY", 0f, 360f);
+    // 2D-вращение вокруг своей оси
+    private void spinQrCode2D(View view) {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(view, "rotation", 0f, 360f);
         animator.setDuration(800);
-        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.setInterpolator(new LinearInterpolator());
         animator.start();
     }
 
+    private void clearFocusAndHideKeyboard() {
+        View view = getCurrentFocus();
+        if (view != null) {
+            view.clearFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+        }
+    }
+
     private void generateAndSaveTicket() {
+        // Убираем курсор и закрываем клавиатуру
+        clearFocusAndHideKeyboard();
+
         String firstName = etFirstName.getText().toString().trim();
         String lastName = etLastName.getText().toString().trim();
         String birthDate = etBirthDate.getText().toString().trim();
         String validFrom = etValidFrom.getText().toString().trim();
         String validTo = etValidTo.getText().toString().trim();
-        String ticketNumber = etTicketNumber.getText().toString().trim();
 
         if (firstName.isEmpty() || lastName.isEmpty() || birthDate.isEmpty()) {
             return;
         }
 
-        // Сохраняем в память устройства
+        // Сохранение в память
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("firstName", firstName);
         editor.putString("lastName", lastName);
         editor.putString("birthDate", birthDate);
         editor.putString("validFrom", validFrom);
         editor.putString("validTo", validTo);
-        editor.putString("ticketNumber", ticketNumber);
         editor.apply();
 
-        // Отображаем билет
-        displayTicket(firstName, lastName, birthDate, validFrom, validTo, ticketNumber);
+        displayTicket(firstName, lastName, birthDate, validFrom, validTo);
     }
 
     private void loadSavedTicketData() {
@@ -145,29 +154,26 @@ public class MainActivity extends AppCompatActivity {
         String birthDate = sharedPreferences.getString("birthDate", "");
         String validFrom = sharedPreferences.getString("validFrom", "");
         String validTo = sharedPreferences.getString("validTo", "");
-        String ticketNumber = sharedPreferences.getString("ticketNumber", "");
 
         etFirstName.setText(firstName);
         etLastName.setText(lastName);
         etBirthDate.setText(birthDate);
         etValidFrom.setText(validFrom);
         etValidTo.setText(validTo);
-        etTicketNumber.setText(ticketNumber);
 
         if (!firstName.isEmpty() && !lastName.isEmpty() && !birthDate.isEmpty()) {
-            displayTicket(firstName, lastName, birthDate, validFrom, validTo, ticketNumber);
+            displayTicket(firstName, lastName, birthDate, validFrom, validTo);
         }
     }
 
-    private void displayTicket(String firstName, String lastName, String birthDate, String validFrom, String validTo, String ticketNumber) {
+    private void displayTicket(String firstName, String lastName, String birthDate, String validFrom, String validTo) {
         tvTicketHeader.setText("Deutschlandticket");
         tvPassengerInfo.setText(String.format("Inhaber: %s %s\nGeburtsdatum: %s", firstName, lastName, birthDate));
         tvValidityInfo.setText(String.format("Gültig ab: %s\nGültig bis: %s", validFrom, validTo));
-        tvTicketNumberInfo.setText(String.format("Ticket-ID: %s", ticketNumber.isEmpty() ? "VRN-DT-8D6EFC6A" : ticketNumber));
 
         String qrContent = String.format(
-                "VRN|DEUTSCHLANDTICKET|Name:%s %s|DOB:%s|ValidFrom:%s|ValidTo:%s|ID:%s",
-                firstName, lastName, birthDate, validFrom, validTo, ticketNumber
+                "VRN|DEUTSCHLANDTICKET|Name:%s %s|DOB:%s|ValidFrom:%s|ValidTo:%s",
+                firstName, lastName, birthDate, validFrom, validTo
         );
 
         Bitmap qrBitmap = generateQrCodeBitmap(qrContent, 600, 600);
