@@ -1,0 +1,6 @@
+<resources>
+    <style name="Theme.VrnTicket" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#004B93</item>
+        <item name="android:statusBarColor">#004B93</item>
+    </style>
+</resources>
